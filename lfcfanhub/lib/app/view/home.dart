@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:lfcfanhub/login.dart';
-import 'package:lfcfanhub/profile.dart';
+import 'package:lfcfanhub/app/view/fixture.dart';
+import 'package:lfcfanhub/app/view/login.dart';
+import 'package:lfcfanhub/app/view/news.dart';
+import 'package:lfcfanhub/app/view/player.dart';
+import 'package:lfcfanhub/app/view/profile.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -10,11 +13,9 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  static List<dynamic> cats = [];
-
   bool isloading = false;
 
-  Future<void> fetchCats() async {
+  Future<void> lfc() async {
     if (isloading == true) {
       return;
     } else {
@@ -37,60 +38,49 @@ class _HomeState extends State<Home> {
         backgroundColor: Colors.red,
       ),
 
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.separated(
-              separatorBuilder: (context, index) => SizedBox(height: 5),
-              itemCount: cats.length,
-              itemBuilder: (context, index) {
-                final img = cats[index]['url'];
-
-                return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(width: 500, child: Image.network(img)),
-                );
-              },
-            ),
-          ),
-
-          SafeArea(
-            child: isloading
-                ? CircularProgressIndicator()
-                : ElevatedButton(
-                    onPressed: () {
-                      fetchCats();
-                    },
-
-                    child: Text("more"),
-                  ),
-          ),
-        ],
-      ),
+      body: Card(),
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+          BottomNavigationBarItem(icon: Icon(Icons.newspaper), label: "News"),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_box),
+            label: "Player",
+          ),
+          BottomNavigationBarItem(icon: Icon(Icons.logout), label: "Fixture"),
           BottomNavigationBarItem(
             icon: Icon(Icons.account_box),
             label: "profile",
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.logout), label: "Login"),
         ],
         currentIndex: 0,
         onTap: (value) async {
-          if (value == 2) {
+          if (value == 4) {
             // await FirebaseAuth.instance.signOut();
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => Login()),
+              MaterialPageRoute(builder: (context) => Profile()),
+            );
+          }
+          if (value == 3) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => Fixture()),
+            );
+          }
+          if (value == 2) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => Players()),
             );
           }
           if (value == 1) {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => Profile()),
+              MaterialPageRoute(builder: (context) => News()),
             );
           }
+
           if (value == 0) {
             Navigator.push(
               context,

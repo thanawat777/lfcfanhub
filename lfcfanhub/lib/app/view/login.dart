@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:lfcfanhub/forgotpassword.dart';
-import 'package:lfcfanhub/register.dart';
+import 'package:lfcfanhub/app/view/forgotpassword.dart';
+import 'package:lfcfanhub/app/view/register.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
