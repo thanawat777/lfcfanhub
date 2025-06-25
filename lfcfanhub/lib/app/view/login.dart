@@ -93,6 +93,10 @@ class _LoginState extends State<Login> {
                       child: ElevatedButton(
                         onPressed: handleLogin,
                         style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadiusGeometry.circular(10),
+                          ),
+
                           backgroundColor: Colors.red,
                           foregroundColor: Colors.white,
                         ),
