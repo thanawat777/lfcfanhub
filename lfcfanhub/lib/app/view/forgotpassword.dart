@@ -37,8 +37,6 @@ class _ForGotpasswordState extends State<ForGotpassword> {
           padding: const EdgeInsets.all(16.0),
 
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-
             children: [
               Padding(
                 padding: const EdgeInsets.all(30.0),
@@ -48,7 +46,7 @@ class _ForGotpasswordState extends State<ForGotpassword> {
                 padding: const EdgeInsets.all(10.0),
                 child: Text(
                   'Enter your Email ',
-                  style: TextStyle(fontSize: 18),
+                  style: TextStyle(fontSize: 16),
                 ),
               ),
               TextField(
@@ -69,7 +67,6 @@ class _ForGotpasswordState extends State<ForGotpassword> {
                     },
                     child: Text("Cancel"),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
                       foregroundColor: Colors.black,
                     ),
                   ),

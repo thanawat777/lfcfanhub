@@ -67,54 +67,64 @@ class _RegisterState extends State<Register> {
                   style: TextStyle(fontSize: 18),
                 ),
               ),
-              TextField(
-                controller: emailController,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: "Email",
+              SizedBox(height: 30),
+              SizedBox(
+                width: double.infinity,
+                height: 40,
+                child: TextField(
+                  controller: emailController,
+                  style: TextStyle(fontSize: 14),
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: "Email",
+                  ),
                 ),
               ),
               SizedBox(height: 10),
-
-              TextField(
-                controller: passwordController,
-                obscureText: true,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: "Password",
+              SizedBox(
+                width: double.infinity,
+                height: 40,
+                child: TextField(
+                  controller: passwordController,
+                  obscureText: true,
+                  style: TextStyle(fontSize: 14),
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: "Password",
+                  ),
                 ),
               ),
-              SizedBox(height: 10),
-
-              TextField(
-                controller: confirmpasswordController,
-                obscureText: true,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: "Confirm Password",
+              SizedBox(height: 15),
+              SizedBox(
+                width: double.infinity,
+                height: 40,
+                child: TextField(
+                  controller: confirmpasswordController,
+                  obscureText: true,
+                  style: TextStyle(fontSize: 14),
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: "Confirm Password",
+                  ),
                 ),
               ),
               SizedBox(height: 20),
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+
                 children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text("Cancel"),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      foregroundColor: Colors.white,
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed: registerUser,
-                    child: Text("Register"),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      foregroundColor: Colors.white,
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: registerUser,
+                      child: Text("Register"),
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadiusGeometry.circular(10),
+                        ),
+                        backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
+                      ),
                     ),
                   ),
                 ],
