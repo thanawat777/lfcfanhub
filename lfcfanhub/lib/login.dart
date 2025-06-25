@@ -51,8 +51,8 @@ class _LoginState extends State<Login> {
           children: [
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Image.network(
-                'https://t1.blockdit.com/photos/2019/09/5d7fc207efbbcf28c92ed07b_800x0xcover_xsoX9QgX.jpg',
+              child: Image.asset(
+                'assets/images/Liverpool.png',
 
                 height: 200,
 
@@ -73,7 +73,7 @@ class _LoginState extends State<Login> {
                       controller: emailController,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
-                        hintText: "Email",
+                        // hintText: "Email",
                       ),
                     ),
                   ),
@@ -133,7 +133,7 @@ class _LoginState extends State<Login> {
                                 ),
                               ),
                             ),
-                            SizedBox(width: 20), // ระยะห่างระหว่างสองข้อความ
+                            SizedBox(width: 20),
                             GestureDetector(
                               onTap: () {
                                 Navigator.push(
