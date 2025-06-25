@@ -53,10 +53,8 @@ class _LoginState extends State<Login> {
               padding: const EdgeInsets.all(8.0),
               child: Image.asset(
                 'assets/images/Liverpool.png',
-
                 height: 200,
-
-                fit: BoxFit.contain,
+                // fit: BoxFit.contain,
               ),
             ),
             Padding(
@@ -74,7 +72,6 @@ class _LoginState extends State<Login> {
                         controller: emailController,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
-                          // hintText: "Email",
                         ),
                       ),
                     ),
