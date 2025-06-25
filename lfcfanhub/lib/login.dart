@@ -64,16 +64,18 @@ class _LoginState extends State<Login> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Email', style: TextStyle(fontSize: 16)),
-
+                  Text('Email', style: TextStyle(fontSize: 14)),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-
-                    child: TextField(
-                      controller: emailController,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        // hintText: "Email",
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: 40,
+                      child: TextField(
+                        controller: emailController,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          // hintText: "Email",
+                        ),
                       ),
                     ),
                   ),
@@ -82,15 +84,19 @@ class _LoginState extends State<Login> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Password', style: TextStyle(fontSize: 16)),
+                        Text('Password', style: TextStyle(fontSize: 14)),
                         Padding(
                           padding: const EdgeInsets.all(.0),
-                          child: TextField(
-                            controller: passwordController,
-                            obscureText: true,
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                              // hintText: "Password",
+                          child: SizedBox(
+                            width: double.infinity,
+                            height: 40,
+                            child: TextField(
+                              controller: passwordController,
+                              obscureText: true,
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(),
+                                // hintText: "Password",
+                              ),
                             ),
                           ),
                         ),
