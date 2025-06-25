@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lfcfanhub/app/view/fixture.dart';
-import 'package:lfcfanhub/app/view/login.dart';
 import 'package:lfcfanhub/app/view/news.dart';
 import 'package:lfcfanhub/app/view/player.dart';
 import 'package:lfcfanhub/app/view/profile.dart';
@@ -13,20 +12,21 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  bool isloading = false;
+  int currentIndex = 0;
 
-  Future<void> lfc() async {
-    if (isloading == true) {
-      return;
-    } else {
-      setState(() {
-        isloading = true;
-      });
-    }
+  final List<Widget> pages = [
+    Text("", style: TextStyle(fontSize: 24)),
+    News(),
+    Players(),
+    Fixture(),
+    Profile(),
+  ];
 
+  void navigateTo(int index) {
     setState(() {
-      isloading = true;
+      currentIndex = index;
     });
+    Navigator.pop(context);
   }
 
   @override
@@ -38,56 +38,76 @@ class _HomeState extends State<Home> {
         backgroundColor: Colors.red,
       ),
 
-      body: Card(),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              decoration: BoxDecoration(color: Colors.red),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: const [
+                  CircleAvatar(
+                    radius: 30,
+                    backgroundImage: AssetImage('assets/images/logoapp.png'),
+                    backgroundColor: Colors.white,
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    'Liverpool FC',
+                    style: TextStyle(color: Colors.white, fontSize: 20),
+                  ),
+                ],
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.home),
+              title: Text('Home'),
+              onTap: () => navigateTo(0),
+            ),
+            ListTile(
+              leading: Icon(Icons.newspaper),
+              title: Text('News'),
+              onTap: () => navigateTo(1),
+            ),
+            ListTile(
+              leading: Icon(Icons.people),
+              title: Text('Players'),
+              onTap: () => navigateTo(2),
+            ),
+            ListTile(
+              leading: Icon(Icons.event),
+              title: Text('Fixtures'),
+              onTap: () => navigateTo(3),
+            ),
+            ListTile(
+              leading: Icon(Icons.person),
+              title: Text('Profile'),
+              onTap: () => navigateTo(4),
+            ),
+          ],
+        ),
+      ),
+
+      body: pages[currentIndex],
       bottomNavigationBar: BottomNavigationBar(
-        items: [
+        backgroundColor: Colors.red,
+        currentIndex: currentIndex,
+        selectedItemColor: const Color.fromARGB(255, 218, 173, 170),
+        unselectedItemColor: const Color.fromARGB(255, 240, 236, 236),
+        type: BottomNavigationBarType.fixed,
+        onTap: (index) {
+          setState(() {
+            currentIndex = index;
+          });
+        },
+        items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
           BottomNavigationBarItem(icon: Icon(Icons.newspaper), label: "News"),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_box),
-            label: "Player",
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.logout), label: "Fixture"),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_box),
-            label: "profile",
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.people), label: "Players"),
+          BottomNavigationBarItem(icon: Icon(Icons.event), label: "Fixture"),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
         ],
-        currentIndex: 0,
-        onTap: (value) async {
-          if (value == 4) {
-            // await FirebaseAuth.instance.signOut();
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => Profile()),
-            );
-          }
-          if (value == 3) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => Fixture()),
-            );
-          }
-          if (value == 2) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => Players()),
-            );
-          }
-          if (value == 1) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => News()),
-            );
-          }
-
-          if (value == 0) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => Home()),
-            );
-          }
-        },
       ),
     );
   }

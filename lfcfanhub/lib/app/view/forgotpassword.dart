@@ -49,11 +49,16 @@ class _ForGotpasswordState extends State<ForGotpassword> {
                   style: TextStyle(fontSize: 16),
                 ),
               ),
-              TextField(
-                controller: emailController,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: "Email",
+              SizedBox(height: 15),
+              SizedBox(
+                width: double.infinity,
+                height: 40,
+                child: TextField(
+                  controller: emailController,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: "Email",
+                  ),
                 ),
               ),
               SizedBox(height: 10),
