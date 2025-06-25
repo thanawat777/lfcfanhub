@@ -1,0 +1,29 @@
+{
+    "project_info": {
+        "project_number": "745984578778",
+        "project_id": "lfcfanhub",
+        "storage_bucket": "lfcfanhub.firebasestorage.app"
+    },
+    "client": [
+        {
+            "client_info": {
+                "mobilesdk_app_id": "1:745984578778:android:95d53b32e56fc8434581e3",
+                "android_client_info": {
+                    "package_name": "com.example.lfcfanhub"
+                }
+            },
+            "oauth_client": [],
+            "api_key": [
+                {
+                    "current_key": "AIzaSyAr1eVj-_4ywp9cbb929dRieM8U3OBiIGY"
+                }
+            ],
+            "services": {
+                "appinvite_service": {
+                    "other_platform_oauth_client": []
+                }
+            }
+        }
+    ],
+    "configuration_version": "1"
+}

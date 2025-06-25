@@ -46,124 +46,104 @@ class _LoginState extends State<Login> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Image.asset(
-                'assets/images/Liverpool.png',
-                height: 200,
-                // fit: BoxFit.contain,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Email', style: TextStyle(fontSize: 14)),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: SizedBox(
-                      width: double.infinity,
-                      height: 40,
-                      child: TextField(
-                        controller: emailController,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(16.0),
+          child: Center(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Image.asset(
+                    'assets/images/Liverpool.png',
+                    height: 200,
+                  ),
+                ),
+                SizedBox(height: 24),
+
+                Text('Email', style: TextStyle(fontSize: 14)),
+                SizedBox(height: 4),
+                SizedBox(
+                  width: double.infinity,
+                  height: 40,
+                  child: TextField(
+                    controller: emailController,
+                    decoration: InputDecoration(border: OutlineInputBorder()),
+                  ),
+                ),
+
+                SizedBox(height: 16),
+
+                Text('Password', style: TextStyle(fontSize: 14)),
+                SizedBox(height: 4),
+                SizedBox(
+                  width: double.infinity,
+                  height: 40,
+                  child: TextField(
+                    controller: passwordController,
+                    obscureText: true,
+                    decoration: InputDecoration(border: OutlineInputBorder()),
+                  ),
+                ),
+
+                SizedBox(height: 16),
+
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: handleLogin,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          foregroundColor: Colors.white,
+                        ),
+                        child: Text('Sign in'),
+                      ),
+                    ),
+                  ],
+                ),
+
+                SizedBox(height: 16),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Register()),
+                        );
+                      },
+                      child: Text(
+                        'Register',
+                        style: TextStyle(
+                          color: Colors.black,
+                          decoration: TextDecoration.underline,
                         ),
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Password', style: TextStyle(fontSize: 14)),
-                        Padding(
-                          padding: const EdgeInsets.all(.0),
-                          child: SizedBox(
-                            width: double.infinity,
-                            height: 40,
-                            child: TextField(
-                              controller: passwordController,
-                              obscureText: true,
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(),
-                                // hintText: "Password",
-                              ),
-                            ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ForGotpassword(),
                           ),
+                        );
+                      },
+                      child: Text(
+                        'Forgot Password?',
+                        style: TextStyle(
+                          color: Colors.black,
+                          decoration: TextDecoration.underline,
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: ElevatedButton(
-                                  onPressed: handleLogin,
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.red,
-                                    foregroundColor: Colors.white,
-                                  ),
-                                  child: Text('Sign in'),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => Register(),
-                                  ),
-                                );
-                              },
-                              child: Text(
-                                'Register',
-                                style: TextStyle(
-                                  color: Colors.black,
-
-                                  decoration: TextDecoration.underline,
-                                ),
-                              ),
-                            ),
-                            SizedBox(width: 20),
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => ForGotpassword(),
-                                  ),
-                                );
-                              },
-                              child: Text(
-                                'Forgot Password?',
-                                style: TextStyle(
-                                  color: Colors.black,
-
-                                  decoration: TextDecoration.underline,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
