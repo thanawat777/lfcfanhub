@@ -1,4 +1,8 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/route_manager.dart';
+import 'package:lfcfanhub/app/model/newsmodel.dart';
 import 'package:lfcfanhub/app/view/fixture.dart';
 import 'package:lfcfanhub/app/view/news.dart';
 import 'package:lfcfanhub/app/view/player.dart';
@@ -21,6 +25,30 @@ class _HomeState extends State<Home> {
     Fixture(),
     Profile(),
   ];
+  final Dio dio = Dio();
+  static Future<List<NewsModel>>? future;
+  Future<List<NewsModel>> fetchLfcNews() async {
+    try {
+      final response = await dio.get(
+        'https://backend.liverpoolfc.com/lfc-rest-api/news?perPage=20',
+      );
+      if (response.statusCode == 200) {
+        final List newsList = response.data['results'];
+        return newsList.map((json) => NewsModel.fromJson(json)).toList();
+      } else {
+        throw Exception('โหลดข่าวไม่สำเร็จ');
+      }
+    } catch (e) {
+      throw Exception('เกิดข้อผิดพลาด: $e');
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    future = fetchLfcNews();
+  }
 
   void navigateTo(int index) {
     setState(() {
@@ -33,7 +61,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("LFC Fan Hub", style: TextStyle(color: Colors.white)),
+        title: Text("LFC ", style: TextStyle(color: Colors.white)),
         centerTitle: true,
         backgroundColor: Colors.red,
       ),
@@ -89,7 +117,58 @@ class _HomeState extends State<Home> {
         ),
       ),
 
-      body: pages[currentIndex],
+      body: FutureBuilder(
+        future: future,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Text("error");
+          } else {
+            return ListView.builder(
+              itemCount: 1,
+              itemBuilder: (context, index) {
+                final title = snapshot.data?[index].title;
+                final image = snapshot.data?[index].image;
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      Get.toNamed("/news");
+                    },
+                    child: Card(
+                      shape: BeveledRectangleBorder(
+                        borderRadius: BorderRadiusGeometry.vertical(),
+                      ),
+                      child: Column(
+                        children: [
+                          Container(
+                            height: 220,
+
+                            width: double.infinity,
+                            color: Colors.blue,
+                            child: Image.network(image ?? "no content"),
+                          ),
+                          Text(
+                            title ?? "no content",
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            );
+          }
+        },
+      ),
+
+      // pages[currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.red,
         currentIndex: currentIndex,
@@ -97,9 +176,11 @@ class _HomeState extends State<Home> {
         unselectedItemColor: const Color.fromARGB(255, 240, 236, 236),
         type: BottomNavigationBarType.fixed,
         onTap: (index) {
-          setState(() {
-            currentIndex = index;
-          });
+          if (index == 1) {
+            Get.toNamed("/news");
+          } else if (index == 2) {
+            Get.toNamed("/player");
+          }
         },
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),

@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/route_manager.dart';
 import 'package:lfcfanhub/app/model/newsmodel.dart';
 
 class NewsPage extends StatefulWidget {
@@ -11,6 +12,7 @@ class NewsPage extends StatefulWidget {
 }
 
 class _NewsPageState extends State<NewsPage> {
+  int currentIndex = 0;
   final Dio dio = Dio();
   Future<List<NewsModel>>? future;
   Future<List<NewsModel>> fetchLfcNews() async {
@@ -39,6 +41,11 @@ class _NewsPageState extends State<NewsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text("News", style: TextStyle(color: Colors.white)),
+        centerTitle: true,
+        backgroundColor: Colors.red,
+      ),
       body: FutureBuilder(
         future: future,
         builder: (context, snapshot) {
@@ -52,13 +59,15 @@ class _NewsPageState extends State<NewsPage> {
               itemBuilder: (context, index) {
                 final title = snapshot.data?[index].title;
                 final image = snapshot.data?[index].image;
-
+                final url = snapshot.data?[index].url;
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: GestureDetector(
                     onTap: () {},
                     child: Card(
-                      shape: BeveledRectangleBorder(),
+                      shape: BeveledRectangleBorder(
+                        borderRadius: BorderRadiusGeometry.vertical(),
+                      ),
                       child: Column(
                         children: [
                           Container(
@@ -85,6 +94,25 @@ class _NewsPageState extends State<NewsPage> {
             );
           }
         },
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.red,
+        currentIndex: currentIndex,
+        selectedItemColor: const Color.fromARGB(255, 218, 173, 170),
+        unselectedItemColor: const Color.fromARGB(255, 240, 236, 236),
+        type: BottomNavigationBarType.fixed,
+        onTap: (index) {
+          if (index == 0) {
+            Get.toNamed("/");
+          }
+        },
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+          BottomNavigationBarItem(icon: Icon(Icons.newspaper), label: "News"),
+          BottomNavigationBarItem(icon: Icon(Icons.people), label: "Players"),
+          BottomNavigationBarItem(icon: Icon(Icons.event), label: "Fixture"),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
+        ],
       ),
     );
   }
