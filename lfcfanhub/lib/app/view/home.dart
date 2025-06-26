@@ -16,7 +16,7 @@ class _HomeState extends State<Home> {
 
   final List<Widget> pages = [
     Text("", style: TextStyle(fontSize: 24)),
-    News(),
+    NewsPage(),
     Players(),
     Fixture(),
     Profile(),
