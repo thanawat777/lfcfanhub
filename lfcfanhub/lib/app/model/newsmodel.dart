@@ -16,7 +16,7 @@ class NewsModel {
   factory NewsModel.fromJson(Map<String, dynamic> json) {
     return NewsModel(
       title: json['title'] ?? '',
-      url: "http://liverpoolfc.com${json['url']}",
+      url: "https://liverpoolfc.com${json['url']}",
       image: json['coverImage']['sizes']['xs']['url'] ?? '',
       // thumbnail: json['thumbnail'] ?? '',
       // publishDate: json['publishDate'] ?? '',

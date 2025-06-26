@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/route_manager.dart';
 import 'package:lfcfanhub/app/model/newsmodel.dart';
+import 'package:lfcfanhub/app/controller/webview.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class NewsPage extends StatefulWidget {
   const NewsPage({super.key});
@@ -63,7 +65,15 @@ class _NewsPageState extends State<NewsPage> {
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: GestureDetector(
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              MyWebViewPage(url: url.toString()),
+                        ),
+                      );
+                    },
                     child: Card(
                       shape: BeveledRectangleBorder(
                         borderRadius: BorderRadiusGeometry.vertical(),
@@ -104,6 +114,10 @@ class _NewsPageState extends State<NewsPage> {
         onTap: (index) {
           if (index == 0) {
             Get.toNamed("/");
+          } else if (index == 1) {
+            Get.toNamed("/news");
+          } else if (index == 3) {
+            Get.toNamed("/fixture");
           }
         },
         items: const [

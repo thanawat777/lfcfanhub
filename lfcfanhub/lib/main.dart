@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:get/get_navigation/src/routes/get_route.dart';
+import 'package:lfcfanhub/app/view/fixture.dart';
 import 'package:lfcfanhub/app/view/home.dart';
 
 import 'package:lfcfanhub/app/view/login.dart';
@@ -30,6 +31,7 @@ class MyApp extends StatelessWidget {
       getPages: [
         GetPage(name: "/", page: () => Home()),
         GetPage(name: '/news', page: () => NewsPage()),
+        GetPage(name: '/fixture', page: () => Fixture()),
       ],
     );
   }

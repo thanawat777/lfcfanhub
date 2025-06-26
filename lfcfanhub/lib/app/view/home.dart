@@ -22,7 +22,7 @@ class _HomeState extends State<Home> {
     Text("", style: TextStyle(fontSize: 24)),
     NewsPage(),
     Players(),
-    Fixture(),
+    // Fixture(),
     Profile(),
   ];
   final Dio dio = Dio();
@@ -180,6 +180,8 @@ class _HomeState extends State<Home> {
             Get.toNamed("/news");
           } else if (index == 2) {
             Get.toNamed("/player");
+          } else if (index == 3) {
+            Get.toNamed("/fixture");
           }
         },
         items: const [
