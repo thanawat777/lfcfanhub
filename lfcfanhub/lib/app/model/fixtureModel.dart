@@ -28,16 +28,16 @@ class FixtureModel {
   factory FixtureModel.fromJson(Map<String, dynamic> json) {
     final match = json['matchData'];
     return FixtureModel(
-      id: json['id'],
-      title: json['title'],
+      id: json['id'] ?? '',
+      title: match['title'] ?? '',
       date: DateTime.parse(match['date']),
-      stadium: match['stadium'],
-      homeTeam: match['homeTeam'],
-      awayTeam: match['awayTeam'],
-      homeTeamLogo: match['homeTeamLogo']['sizes']['sm']['url'],
-      awayTeamLogo: match['awayTeamLogo']['sizes']['sm']['url'],
-      competitionName: match['competition']['displayName'],
-      competitionLogo: match['competition']['logo']['sizes']['sm']['url'],
+      stadium: match['stadium'] ?? '',
+      homeTeam: match['homeTeam'] ?? '',
+      awayTeam: match['awayTeam'] ?? '',
+      homeTeamLogo: match['homeTeamLogo']['sizes']['sm']['url'] ?? '',
+      awayTeamLogo: match['awayTeamLogo']['sizes']['sm']['url'] ?? '',
+      competitionName: match['competition']['displayName'] ?? '',
+      competitionLogo: match['competition']['logo']['sizes']['sm']['url'] ?? '',
     );
   }
 }

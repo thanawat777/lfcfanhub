@@ -14,15 +14,12 @@ class _MyWebViewPageState extends State<MyWebViewPage> {
   late final WebViewController _controller;
   String currentUrl = "Loading...";
 
-  // ฟังก์ชันแปลง URL ให้เป็น https:// ถ้ายังไม่มี
   String normalizeUrl(String url) {
     if (!url.startsWith("http")) {
       return "https://$url";
     } else {
       return url;
     }
-
-    //print(url);
   }
 
   @override
@@ -46,7 +43,7 @@ class _MyWebViewPageState extends State<MyWebViewPage> {
           },
         ),
       )
-      ..loadRequest(Uri.parse(fixedUrl)); // ✅ โหลด URL ที่ถูกแปลงแล้ว
+      ..loadRequest(Uri.parse(fixedUrl));
   }
 
   @override

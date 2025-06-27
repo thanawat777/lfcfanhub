@@ -7,6 +7,8 @@ import 'package:lfcfanhub/app/view/fixture.dart';
 import 'package:lfcfanhub/app/view/news.dart';
 import 'package:lfcfanhub/app/view/player.dart';
 import 'package:lfcfanhub/app/view/profile.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -113,6 +115,16 @@ class _HomeState extends State<Home> {
               title: Text('Profile'),
               onTap: () => navigateTo(4),
             ),
+            ListTile(
+              leading: Icon(Icons.shopping_cart),
+              title: Text('LFC Store'),
+              onTap: () async {
+                final Uri _url = Uri.parse(
+                  'https://play.google.com/store/apps/details?id=com.store.liverpoolfc&hl=th',
+                );
+                if (!await launchUrl(_url)) {}
+              },
+            ),
           ],
         ),
       ),
@@ -126,7 +138,7 @@ class _HomeState extends State<Home> {
             return Text("error");
           } else {
             return ListView.builder(
-              itemCount: 1,
+              itemCount: 3,
               itemBuilder: (context, index) {
                 final title = snapshot.data?[index].title;
                 final image = snapshot.data?[index].image;
@@ -176,12 +188,16 @@ class _HomeState extends State<Home> {
         unselectedItemColor: const Color.fromARGB(255, 240, 236, 236),
         type: BottomNavigationBarType.fixed,
         onTap: (index) {
-          if (index == 1) {
+          if (index == 0) {
+            Get.toNamed("/");
+          } else if (index == 1) {
             Get.toNamed("/news");
           } else if (index == 2) {
             Get.toNamed("/player");
           } else if (index == 3) {
             Get.toNamed("/fixture");
+          } else if (index == 4) {
+            Get.toNamed("/profile");
           }
         },
         items: const [

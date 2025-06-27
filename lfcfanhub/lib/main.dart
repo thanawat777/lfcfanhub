@@ -7,6 +7,8 @@ import 'package:lfcfanhub/app/view/home.dart';
 
 import 'package:lfcfanhub/app/view/login.dart';
 import 'package:lfcfanhub/app/view/news.dart';
+import 'package:lfcfanhub/app/view/player.dart';
+import 'package:lfcfanhub/app/view/profile.dart';
 import 'package:lfcfanhub/app/view/register.dart';
 
 void main() async {
@@ -31,7 +33,9 @@ class MyApp extends StatelessWidget {
       getPages: [
         GetPage(name: "/", page: () => Home()),
         GetPage(name: '/news', page: () => NewsPage()),
-        GetPage(name: '/fixture', page: () => Fixture()),
+        GetPage(name: '/player', page: () => Players()),
+        GetPage(name: '/profile', page: () => Profile()),
+        GetPage(name: '/fixture', page: () => FixturePage()),
       ],
     );
   }

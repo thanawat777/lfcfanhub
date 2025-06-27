@@ -116,8 +116,12 @@ class _NewsPageState extends State<NewsPage> {
             Get.toNamed("/");
           } else if (index == 1) {
             Get.toNamed("/news");
+          } else if (index == 2) {
+            Get.toNamed("/player");
           } else if (index == 3) {
             Get.toNamed("/fixture");
+          } else if (index == 4) {
+            Get.toNamed("/profile");
           }
         },
         items: const [
