@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 class NewsModel {
   final String title;
   final String url;

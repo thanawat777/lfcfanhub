@@ -62,6 +62,7 @@ class _NewsPageState extends State<NewsPage> {
                 final title = snapshot.data?[index].title;
                 final image = snapshot.data?[index].image;
                 final url = snapshot.data?[index].url;
+
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: GestureDetector(

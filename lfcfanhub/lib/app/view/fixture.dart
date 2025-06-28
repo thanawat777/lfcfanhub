@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:lfcfanhub/app/model/fixtureModel.dart';
 
 class FixturePage extends StatefulWidget {
@@ -13,7 +13,7 @@ class FixturePage extends StatefulWidget {
 class _FixturePageState extends State<FixturePage> {
   final Dio dio = Dio();
 
-  late Future<List<FixtureModel>>? futureFixtures;
+  Future<List<FixtureModel>>? futureFixtures;
 
   Future<List<FixtureModel>> fetchLfcFixture() async {
     try {
@@ -22,8 +22,15 @@ class _FixturePageState extends State<FixturePage> {
       );
 
       if (response.statusCode == 200) {
-        final List fixtureList = response.data['id'];
-        return fixtureList.map((json) => FixtureModel.fromJson(json)).toList();
+        final List fixtureList = response.data;
+
+        List<FixtureModel> fixtures = fixtureList
+            .map((json) => FixtureModel.fromJson(json))
+            .toList();
+
+        fixtures.sort((a, b) => a.date.compareTo(b.date));
+
+        return fixtures;
       } else {
         throw Exception('โหลดข้อมูลไม่สำเร็จ');
       }
@@ -34,7 +41,6 @@ class _FixturePageState extends State<FixturePage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     futureFixtures = fetchLfcFixture();
   }
@@ -43,10 +49,7 @@ class _FixturePageState extends State<FixturePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "โปรแกรมแข่งขัน",
-          style: TextStyle(color: Colors.white),
-        ),
+        title: const Text("Fixture", style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.red,
         centerTitle: true,
       ),
@@ -57,67 +60,100 @@ class _FixturePageState extends State<FixturePage> {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return const Center(child: Text("เกิดข้อผิดพลาดในการโหลดข้อมูล"));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text("ไม่มีข้อมูล"));
           } else {
-            final fixtures = snapshot.data!;
             return ListView.builder(
-              itemCount: fixtures.length,
+              itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
-                final title = snapshot.data?[index].title;
-                // final stadium = snapshot.data?[index].stadium;
-                // final homeTeam = snapshot.data?[index].homeTeam;
-                // final awayTeam = snapshot.data?[index].awayTeam;
-                final homeTeamLogo = snapshot.data?[index].homeTeamLogo;
+                final fixture = snapshot.data![index];
+                return Card(
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
+                  elevation: 2,
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            children: [
+                              Image.network(fixture.homeTeamLogo, height: 40),
+                              const SizedBox(height: 5),
+                              Text(
+                                fixture.homeTeam ?? "",
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          child: Column(
+                            children: [
+                              Text(
+                                fixture.premier +
+                                    '\n ' +
+                                    DateFormat(
+                                      ' d MMMM y',
+                                    ).format(fixture.date.toLocal()),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 11,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 6),
 
-                return Column(
-                  children: [
-                    Container(
-                      height: 220,
+                              const SizedBox(height: 6),
+                              Text(
+                                DateFormat(
+                                  'HH:mm',
+                                ).format(fixture.date.toLocal()),
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
 
-                      width: double.infinity,
-                      color: Colors.blue,
-                      child: Image.network(homeTeamLogo ?? "no content"),
+                                textAlign: TextAlign.center,
+                              ),
+                              Text(
+                                'Stadium:  ' + fixture.stadium ?? "",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          child: Column(
+                            children: [
+                              Image.network(
+                                fixture.awayTeamLogo ?? "",
+                                height: 40,
+                              ),
+                              const SizedBox(height: 5),
+                              Text(
+                                fixture.awayTeam,
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                    Text(
-                      title ?? "no content",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
+                  ),
                 );
               },
             );
           }
-          // bottomNavigationBar: BottomNavigationBar(
-          //   currentIndex: 3,
-          //   backgroundColor: Colors.red,
-          //   selectedItemColor: Colors.white,
-          //   unselectedItemColor: Colors.white60,
-          //   onTap: (index) {
-          //     if (index == 0) Get.toNamed("/");
-          //     if (index == 1) Get.toNamed("/news");
-          //     if (index == 2) Get.toNamed("/player");
-          //     if (index == 4) Get.toNamed("/profile");
-          //   },
-          //   items: const [
-          //     BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-          //     BottomNavigationBarItem(icon: Icon(Icons.newspaper), label: "News"),
-          //     BottomNavigationBarItem(icon: Icon(Icons.people), label: "Players"),
-          //     BottomNavigationBarItem(icon: Icon(Icons.event), label: "Fixture"),
-          //     BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
-          //   ],
-          // );
         },
       ),
     );
   }
-}  
-  
-  // String formatDate(DateTime dateTime) {
-  //   return "${dateTime.day}/${dateTime.month}/${dateTime.year} "
-  //       "${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')} น.";
-  // }
-// }
-        
+}

@@ -1,4 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/route_manager.dart';
 import 'package:lfcfanhub/app/view/login.dart';
 
 class Register extends StatefulWidget {
@@ -41,6 +44,33 @@ class _RegisterState extends State<Register> {
         SnackBar(content: Text("password and confirmpassword not match")),
       );
       return;
+    }
+    try {
+      UserCredential userInfo = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+            email: inputEmail,
+            password: inputPassword,
+          );
+      if (userInfo.user != null) {
+        final String uid = userInfo.user!.uid;
+        await FirebaseFirestore.instance.collection("Member").doc(uid).set({
+          "email": inputEmail,
+          "password": inputPassword,
+          "confirmpassword": inputConfirmPassword,
+          "createdAt": FieldValue.serverTimestamp(),
+        });
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("Register complete")));
+      }
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => Login()),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Sometime when wrong")));
     }
   }
 
