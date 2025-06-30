@@ -20,7 +20,6 @@ class _PlayersState extends State<Players> {
       final response = await dio.get(
         'https://backend.liverpoolfc.com/lfc-rest-api/players?teamSlug=mens',
       );
-
       if (response.statusCode == 200) {
         final List playerList = response.data;
         return playerList.map((json) => PlayerModel.fromJson(json)).toList();
@@ -42,8 +41,9 @@ class _PlayersState extends State<Players> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Players", style: TextStyle()),
+        title: Text("Players & Staff", style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.red,
+        centerTitle: true,
       ),
       body: FutureBuilder<List<PlayerModel>>(
         future: futurePlayer,
@@ -53,18 +53,49 @@ class _PlayersState extends State<Players> {
           } else if (snapshot.hasError) {
             return Center(child: Text("เกิดข้อผิดพลาดในการโหลดข้อมูล"));
           } else {
-            return ListView.builder(
+            return ListView.separated(
+              separatorBuilder: (context, index) => Divider(color: Colors.red),
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
                 final player = snapshot.data![index];
-                print(player.name);
-                return ListTile(
-                  // leading: CircleAvatar(
-                  //   child: Text(player.shirtNumber),
-                  //   backgroundColor: Colors.redAccent,
-                  //   foregroundColor: Colors.white,
-                  // ),
-                  // title: Text(player.name),
+
+                return Row(
+                  children: [
+                    Expanded(
+                      child: ListTile(
+                        selectedColor: Colors.blue,
+                        contentPadding: EdgeInsets.symmetric(
+                          vertical: 30,
+                          horizontal: 16,
+                        ),
+                        leading: CircleAvatar(
+                          backgroundColor: Colors.red[700],
+                          child: Text(
+                            player.shirtNumber,
+                            style: TextStyle(fontSize: 15, color: Colors.white),
+                          ),
+                        ),
+                        title: Text(
+                          player.name,
+                          style: TextStyle(fontSize: 20),
+                        ),
+                        subtitle: Text("Position: ${player.position}"),
+                        // trailing: Image.network(
+                        //   player.profilepicture,
+                        //   width: 100,
+                        //   height: 300,
+                        // ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 100,
+                      height: 100,
+                      child: Image.network(
+                        player.profilepicture,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ],
                 );
               },
             );

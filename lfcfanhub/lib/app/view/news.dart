@@ -23,7 +23,7 @@ class _NewsPageState extends State<NewsPage> {
         'https://backend.liverpoolfc.com/lfc-rest-api/news?perPage=20',
       );
       if (response.statusCode == 200) {
-        final List newsList = response.data;
+        final List newsList = response.data['results'];
         return newsList.map((json) => NewsModel.fromJson(json)).toList();
       } else {
         throw Exception('โหลดข่าวไม่สำเร็จ');
@@ -54,6 +54,7 @@ class _NewsPageState extends State<NewsPage> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
+            print(snapshot.error);
             return Text("error");
           } else {
             return ListView.builder(
