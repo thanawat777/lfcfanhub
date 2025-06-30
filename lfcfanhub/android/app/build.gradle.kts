@@ -16,11 +16,12 @@ if (keystorePropertiesFile.exists()) {
 android {
     namespace = "com.example.lfcfanhub"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+        
     }
 
     kotlinOptions {
@@ -58,6 +59,8 @@ dependencies {
   // Import the Firebase BoM
   implementation(platform("com.google.firebase:firebase-bom:33.15.0"))
   implementation("com.google.firebase:firebase-analytics")
+  
+  
 }
 flutter {
     source = "../.."

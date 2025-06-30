@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+
 import 'package:intl/intl.dart';
 import 'package:lfcfanhub/app/model/fixtureModel.dart';
 
@@ -39,6 +40,7 @@ class _FixturePageState extends State<FixturePage> {
     }
   }
 
+  Set<int> starredMatches = {};
   @override
   void initState() {
     super.initState();

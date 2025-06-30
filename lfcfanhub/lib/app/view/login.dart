@@ -1,5 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get_navigation/get_navigation.dart';
 import 'package:lfcfanhub/app/view/forgotpassword.dart';
+import 'package:lfcfanhub/app/view/home.dart';
 import 'package:lfcfanhub/app/view/register.dart';
 
 class Login extends StatefulWidget {
@@ -27,18 +30,33 @@ class _LoginState extends State<Login> {
     super.dispose();
   }
 
-  void handleLogin() {
-    String email = emailController.text.trim();
-    String password = passwordController.text.trim();
+  void handleLogin() async {
+    final email = emailController.text.trim();
+    final password = passwordController.text.trim();
 
-    if (email == "admin" && password == "1234") {
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text("Login Success!")));
-    } else {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => Home()),
+      );
+    } on FirebaseAuthException catch (e) {
+      String message = "Login failed";
+      if (e.code == 'user-not-found') {
+        message = "No user found with this email.";
+      } else if (e.code == 'wrong-password') {
+        message = "Incorrect password.";
+      }
+
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text("Invalid username or password")));
+      ).showSnackBar(SnackBar(content: Text(message)));
     }
   }
 

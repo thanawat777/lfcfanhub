@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
@@ -32,10 +34,12 @@ class _HomeState extends State<Home> {
   final Dio dio = Dio();
   static Future<List<NewsModel>>? futureNews;
   Future<List<NewsModel>> fetchLfcNews() async {
+    print("fetch news");
     try {
       final response = await dio.get(
         'https://backend.liverpoolfc.com/lfc-rest-api/news?perPage=20',
       );
+      print(response.statusCode);
       if (response.statusCode == 200) {
         final List newsList = response.data['results'];
         return newsList.map((json) => NewsModel.fromJson(json)).toList();
@@ -43,12 +47,14 @@ class _HomeState extends State<Home> {
         throw Exception('โหลดข่าวไม่สำเร็จ');
       }
     } catch (e) {
+      print(e);
       throw Exception('เกิดข้อผิดพลาด: $e');
     }
   }
 
   Future<List<FixtureModel>>? futureFixtures;
   Future<List<FixtureModel>> fetchLfcFixture() async {
+    print("fetch Fixture");
     try {
       final response = await dio.get(
         'https://backend.liverpoolfc.com/lfc-rest-api/fixtures?sort=desc&teamSlug=mens&seasonYear=2025',
@@ -100,11 +106,11 @@ class _HomeState extends State<Home> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            DrawerHeader(
+            const DrawerHeader(
               decoration: BoxDecoration(color: Colors.red),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
-                children: const [
+                children: [
                   CircleAvatar(
                     radius: 30,
                     backgroundImage: AssetImage('assets/images/logoapp.png'),
@@ -119,38 +125,40 @@ class _HomeState extends State<Home> {
               ),
             ),
             ListTile(
-              leading: Icon(Icons.home),
-              title: Text('Home'),
-              onTap: () => navigateTo(0),
+              leading: const Icon(Icons.home),
+              title: const Text('Home'),
+              onTap: () => Navigator.pop(context),
             ),
             ListTile(
-              leading: Icon(Icons.newspaper),
-              title: Text('News'),
-              onTap: () => navigateTo(1),
+              leading: const Icon(Icons.newspaper),
+              title: const Text('News'),
+              onTap: () => Get.toNamed('/news'),
             ),
             ListTile(
-              leading: Icon(Icons.people),
-              title: Text('Players'),
-              onTap: () => navigateTo(2),
+              leading: const Icon(Icons.people),
+              title: const Text('Players'),
+              onTap: () => Get.toNamed('/player'),
             ),
             ListTile(
-              leading: Icon(Icons.event),
-              title: Text('Fixtures'),
-              onTap: () => navigateTo(3),
+              leading: const Icon(Icons.event),
+              title: const Text('Fixtures'),
+              onTap: () => Get.toNamed('/fixture'),
             ),
             ListTile(
-              leading: Icon(Icons.person),
-              title: Text('Profile'),
-              onTap: () => navigateTo(4),
+              leading: const Icon(Icons.person),
+              title: const Text('Profile'),
+              onTap: () => Get.toNamed('/profile'),
             ),
             ListTile(
-              leading: Icon(Icons.shopping_cart),
-              title: Text('LFC Store'),
+              leading: const Icon(Icons.shopping_cart),
+              title: const Text('LFC Store'),
               onTap: () async {
-                final Uri _url = Uri.parse(
+                final Uri url = Uri.parse(
                   'https://play.google.com/store/apps/details?id=com.store.liverpoolfc&hl=th',
                 );
-                if (!await launchUrl(_url)) {}
+                if (!await launchUrl(url)) {
+                  throw 'Could not launch $url';
+                }
               },
             ),
           ],
@@ -328,24 +336,29 @@ class _HomeState extends State<Home> {
         ],
       ),
 
-      // pages[currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.red,
-        currentIndex: currentIndex,
-        selectedItemColor: const Color.fromARGB(255, 218, 173, 170),
-        unselectedItemColor: const Color.fromARGB(255, 240, 236, 236),
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.white70,
+        currentIndex: 0,
         type: BottomNavigationBarType.fixed,
         onTap: (index) {
-          if (index == 0) {
-            Get.toNamed("/");
-          } else if (index == 1) {
-            Get.toNamed("/news");
-          } else if (index == 2) {
-            Get.toNamed("/player");
-          } else if (index == 3) {
-            Get.toNamed("/fixture");
-          } else if (index == 4) {
-            Get.toNamed("/profile");
+          switch (index) {
+            case 0:
+              Get.toNamed("/");
+              break;
+            case 1:
+              Get.toNamed("/news");
+              break;
+            case 2:
+              Get.toNamed("/player");
+              break;
+            case 3:
+              Get.toNamed("/fixture");
+              break;
+            case 4:
+              Get.toNamed("/profile");
+              break;
           }
         },
         items: const [

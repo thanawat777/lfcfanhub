@@ -109,8 +109,8 @@ class _NewsPageState extends State<NewsPage> {
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.red,
         currentIndex: currentIndex,
-        selectedItemColor: const Color.fromARGB(255, 218, 173, 170),
-        unselectedItemColor: const Color.fromARGB(255, 240, 236, 236),
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.white70,
         type: BottomNavigationBarType.fixed,
         onTap: (index) {
           if (index == 0) {
