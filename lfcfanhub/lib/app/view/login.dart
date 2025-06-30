@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get_navigation/get_navigation.dart';
 import 'package:lfcfanhub/app/view/forgotpassword.dart';
 import 'package:lfcfanhub/app/view/home.dart';
 import 'package:lfcfanhub/app/view/register.dart';
@@ -15,6 +14,7 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   late TextEditingController emailController;
   late TextEditingController passwordController;
+  bool _isObscure = true;
 
   @override
   void initState() {
@@ -34,6 +34,13 @@ class _LoginState extends State<Login> {
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
 
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("กรุณากรอก Email และ Password")));
+      return;
+    }
+
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
@@ -49,9 +56,9 @@ class _LoginState extends State<Login> {
     } on FirebaseAuthException catch (e) {
       String message = "Login failed";
       if (e.code == 'user-not-found') {
-        message = "No user found with this email.";
+        message = "ไม่พบบัญชีผู้ใช้นี้";
       } else if (e.code == 'wrong-password') {
-        message = "Incorrect password.";
+        message = "รหัสผ่านไม่ถูกต้อง";
       }
 
       ScaffoldMessenger.of(
@@ -66,105 +73,100 @@ class _LoginState extends State<Login> {
       body: Center(
         child: SingleChildScrollView(
           padding: EdgeInsets.all(16.0),
-          child: Center(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: Image.asset(
-                    'assets/images/Liverpool.png',
-                    height: 200,
+          child: Column(
+            children: [
+              Image.asset('assets/images/Liverpool.png', height: 180),
+              SizedBox(height: 24),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text('Email', style: TextStyle(fontSize: 14)),
+              ),
+              SizedBox(height: 4),
+              TextField(
+                controller: emailController,
+                decoration: InputDecoration(border: OutlineInputBorder()),
+              ),
+              SizedBox(height: 16),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text('Password', style: TextStyle(fontSize: 14)),
+              ),
+              SizedBox(height: 4),
+              TextField(
+                controller: passwordController,
+                obscureText: _isObscure,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _isObscure ? Icons.visibility_off : Icons.visibility,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isObscure = !_isObscure;
+                      });
+                    },
                   ),
                 ),
-                SizedBox(height: 24),
-
-                Text('Email', style: TextStyle(fontSize: 14)),
-                SizedBox(height: 4),
-                SizedBox(
-                  width: double.infinity,
-                  height: 40,
-                  child: TextField(
-                    controller: emailController,
-                    decoration: InputDecoration(border: OutlineInputBorder()),
+              ),
+              SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                height: 45,
+                child: ElevatedButton(
+                  onPressed: handleLogin,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
+                  child: Text("Sign In"),
                 ),
-
-                SizedBox(height: 16),
-
-                Text('Password', style: TextStyle(fontSize: 14)),
-                SizedBox(height: 4),
-                SizedBox(
-                  width: double.infinity,
-                  height: 40,
-                  child: TextField(
-                    controller: passwordController,
-                    obscureText: true,
-                    decoration: InputDecoration(border: OutlineInputBorder()),
+              ),
+              SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Register()),
+                      );
+                    },
+                    child: Text(
+                      'Register',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 14,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
                   ),
-                ),
-
-                SizedBox(height: 16),
-
-                Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: handleLogin,
-                        style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadiusGeometry.circular(10),
-                          ),
-
-                          backgroundColor: Colors.red,
-                          foregroundColor: Colors.white,
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ForGotpassword(),
                         ),
-                        child: Text('Sign in'),
+                      );
+                    },
+                    child: Text(
+                      'Forgot Password?',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 14,
+                        decoration: TextDecoration.underline,
                       ),
                     ),
-                  ],
-                ),
-
-                SizedBox(height: 16),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => Register()),
-                        );
-                      },
-                      child: Text(
-                        'Register',
-                        style: TextStyle(
-                          color: Colors.black,
-                          decoration: TextDecoration.underline,
-                        ),
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ForGotpassword(),
-                          ),
-                        );
-                      },
-                      child: Text(
-                        'Forgot Password?',
-                        style: TextStyle(
-                          color: Colors.black,
-                          decoration: TextDecoration.underline,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),

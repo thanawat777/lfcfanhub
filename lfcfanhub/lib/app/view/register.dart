@@ -15,7 +15,7 @@ class _RegisterState extends State<Register> {
   late TextEditingController emailController;
   late TextEditingController passwordController;
   late TextEditingController confirmpasswordController;
-
+  bool _isObscure = true;
   @override
   void initState() {
     super.initState();
@@ -121,6 +121,16 @@ class _RegisterState extends State<Register> {
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     hintText: "Password",
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isObscure ? Icons.visibility_off : Icons.visibility,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _isObscure = !_isObscure;
+                        });
+                      },
+                    ),
                   ),
                 ),
               ),
@@ -135,6 +145,16 @@ class _RegisterState extends State<Register> {
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     hintText: "Confirm Password",
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isObscure ? Icons.visibility_off : Icons.visibility,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _isObscure = !_isObscure;
+                        });
+                      },
+                    ),
                   ),
                 ),
               ),
