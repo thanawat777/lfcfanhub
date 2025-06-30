@@ -51,12 +51,10 @@ class ProfileState extends State<Profile> {
   }
 
   Future<void> updateData() async {
-    final image = imageURLController.text.trim();
     final name = nameController.text.trim();
     try {
       await FirebaseFirestore.instance.collection("memberes").doc(uid).update({
         "name": name,
-        "profile_picture": image,
       });
     } catch (e) {
       // Get.snackBar("warning, Some ting when wrong");
