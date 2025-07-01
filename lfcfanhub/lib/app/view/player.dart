@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:lfcfanhub/app/controller/webview.dart';
+import 'package:lfcfanhub/app/controller/detailplayers.dart';
 
 import 'package:lfcfanhub/app/model/playerteam.dart';
 
@@ -52,6 +52,7 @@ class _PlayersState extends State<Players> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
+            print(snapshot.error);
             return Center(child: Text("เกิดข้อผิดพลาดในการโหลดข้อมูล"));
           } else {
             return ListView.separated(
@@ -59,7 +60,6 @@ class _PlayersState extends State<Players> {
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
                 final player = snapshot.data![index];
-                final url = snapshot.data?[index].url;
 
                 return Row(
                   children: [
@@ -70,7 +70,7 @@ class _PlayersState extends State<Players> {
                             context,
                             MaterialPageRoute(
                               builder: (context) =>
-                                  MyWebViewPage(url: url.toString()),
+                                  PlayerDetail(player: player),
                             ),
                           );
                         },
@@ -81,15 +81,23 @@ class _PlayersState extends State<Players> {
                             horizontal: 16,
                           ),
                           leading: CircleAvatar(
-                            backgroundColor: Colors.red[700],
-                            child: Text(
-                              player.shirtNumber,
-                              style: TextStyle(
-                                fontSize: 15,
-                                color: Colors.white,
-                              ),
-                            ),
+                            backgroundColor: player.shirtNumber.isNotEmpty
+                                ? Colors.red[700]
+                                : Colors.grey,
+                            child: player.shirtNumber.isNotEmpty
+                                ? Text(
+                                    player.shirtNumber,
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : null,
+                            backgroundImage: player.shirtNumber.isEmpty
+                                ? AssetImage('assets/images/logoapp.png')
+                                : null,
                           ),
+
                           title: Text(
                             player.name,
                             style: TextStyle(fontSize: 20),

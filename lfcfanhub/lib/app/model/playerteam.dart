@@ -3,7 +3,12 @@ class PlayerModel {
   final String shirtNumber;
   final String profilepicture;
   final String position;
-  final String url;
+
+  final String dateOfBirth;
+  final String bio;
+  final String placeOfBirth;
+  final String nationality;
+  final List<String> honors;
   // final String position;
   // final String imageUrl;
 
@@ -12,7 +17,12 @@ class PlayerModel {
     required this.shirtNumber,
     required this.profilepicture,
     required this.position,
-    required this.url,
+
+    required this.dateOfBirth,
+    required this.bio,
+    required this.placeOfBirth,
+    required this.nationality,
+    required this.honors,
     // required this.position,
     // required this.imageUrl,
   });
@@ -23,7 +33,12 @@ class PlayerModel {
       shirtNumber: json['shirtNumber']?.toString() ?? '',
       profilepicture: json['profileImage']['sizes']['xl']['url'] ?? '',
       position: json['position']['type'] ?? '',
-      url: "https://liverpoolfc.com${json['url']}",
+
+      dateOfBirth: json['dateOfBirth'] ?? "",
+      bio: json['bio'] ?? "",
+      placeOfBirth: json['placeOfBirth'] ?? "",
+      nationality: json['nationality'] ?? "",
+      honors: List<String>.from(json['honors'] ?? []),
       // position: json['position'] ?? '',
       // imageUrl: json['image']['styles']['sm'] ?? '',
     );
