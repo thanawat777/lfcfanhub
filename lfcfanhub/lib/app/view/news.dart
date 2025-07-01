@@ -47,6 +47,7 @@ class _NewsPageState extends State<NewsPage> {
         title: Text("News", style: TextStyle(color: Colors.white)),
         centerTitle: true,
         backgroundColor: Colors.red,
+        iconTheme: IconThemeData(color: Colors.white),
       ),
       body: FutureBuilder(
         future: future,

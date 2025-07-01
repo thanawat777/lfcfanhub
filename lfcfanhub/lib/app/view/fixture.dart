@@ -1,7 +1,11 @@
-import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
+import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
+import 'package:dio/dio.dart';
 import 'package:lfcfanhub/app/model/fixtureModel.dart';
 
 class FixturePage extends StatefulWidget {
@@ -13,7 +17,9 @@ class FixturePage extends StatefulWidget {
 
 class _FixturePageState extends State<FixturePage> {
   final Dio dio = Dio();
-
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+  Set<int> starredMatches = {};
   Future<List<FixtureModel>>? futureFixtures;
 
   Future<List<FixtureModel>> fetchLfcFixture() async {
@@ -40,11 +46,14 @@ class _FixturePageState extends State<FixturePage> {
     }
   }
 
-  Set<int> starredMatches = {};
   @override
   void initState() {
     super.initState();
     futureFixtures = fetchLfcFixture();
+
+    const android = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const settings = InitializationSettings(android: android);
+    flutterLocalNotificationsPlugin.initialize(settings);
   }
 
   @override
@@ -53,6 +62,7 @@ class _FixturePageState extends State<FixturePage> {
       appBar: AppBar(
         title: const Text("Fixture", style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.red,
+        iconTheme: const IconThemeData(color: Colors.white),
         centerTitle: true,
       ),
       body: FutureBuilder<List<FixtureModel>>(
@@ -69,6 +79,8 @@ class _FixturePageState extends State<FixturePage> {
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
                 final fixture = snapshot.data![index];
+                final isStarred = starredMatches.contains(index);
+
                 return Card(
                   margin: const EdgeInsets.symmetric(
                     horizontal: 12,
@@ -77,75 +89,96 @@ class _FixturePageState extends State<FixturePage> {
                   elevation: 2,
                   child: Padding(
                     padding: const EdgeInsets.all(12),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    child: Column(
                       children: [
-                        Expanded(
-                          child: Column(
-                            children: [
-                              Image.network(fixture.homeTeamLogo, height: 40),
-                              const SizedBox(height: 5),
-                              Text(
-                                fixture.homeTeam ?? "",
-                                textAlign: TextAlign.center,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                children: [
+                                  Image.network(
+                                    fixture.homeTeamLogo,
+                                    height: 40,
+                                  ),
+                                  const SizedBox(height: 5),
+                                  Text(
+                                    fixture.homeTeam ?? "",
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                        ),
-                        Expanded(
-                          child: Column(
-                            children: [
-                              Text(
-                                fixture.premier +
-                                    '\n ' +
+                            ),
+                            Expanded(
+                              child: Column(
+                                children: [
+                                  Text(
+                                    fixture.premier +
+                                        '\n ' +
+                                        DateFormat(
+                                          'd MMMM y',
+                                        ).format(fixture.date.toLocal()),
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 11,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Text(
                                     DateFormat(
-                                      ' d MMMM y',
+                                      'HH:mm',
                                     ).format(fixture.date.toLocal()),
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 11,
-                                ),
-                                textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  Text(
+                                    'Stadium:  ' + fixture.stadium ?? "",
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              const SizedBox(height: 6),
-
-                              const SizedBox(height: 6),
-                              Text(
-                                DateFormat(
-                                  'HH:mm',
-                                ).format(fixture.date.toLocal()),
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-
-                                textAlign: TextAlign.center,
+                            ),
+                            Expanded(
+                              child: Column(
+                                children: [
+                                  Image.network(
+                                    fixture.awayTeamLogo ?? "",
+                                    height: 40,
+                                  ),
+                                  const SizedBox(height: 5),
+                                  Text(
+                                    fixture.awayTeam,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
                               ),
-                              Text(
-                                'Stadium:  ' + fixture.stadium ?? "",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey,
-                                ),
+                            ),
+                            IconButton(
+                              icon: Icon(
+                                isStarred ? Icons.star : Icons.star_border,
+                                color: isStarred
+                                    ? Colors.yellow[800]
+                                    : Colors.grey,
                               ),
-                            ],
-                          ),
-                        ),
-                        Expanded(
-                          child: Column(
-                            children: [
-                              Image.network(
-                                fixture.awayTeamLogo ?? "",
-                                height: 40,
-                              ),
-                              const SizedBox(height: 5),
-                              Text(
-                                fixture.awayTeam,
-                                textAlign: TextAlign.center,
-                              ),
-                            ],
-                          ),
+                              onPressed: () {
+                                setState(() {
+                                  if (isStarred) {
+                                    starredMatches.remove(index);
+                                  } else {
+                                    starredMatches.add(index);
+                                  }
+                                });
+                              },
+                            ),
+                          ],
                         ),
                       ],
                     ),

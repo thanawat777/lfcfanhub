@@ -11,7 +11,12 @@ class PlayerDetail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(player.name), backgroundColor: Colors.red),
+      appBar: AppBar(
+        title: Text(player.name, style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.red,
+        iconTheme: IconThemeData(color: Colors.white),
+        centerTitle: true,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: ListView(

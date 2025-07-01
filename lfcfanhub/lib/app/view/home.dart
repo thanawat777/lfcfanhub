@@ -93,6 +93,7 @@ class _HomeState extends State<Home> {
         title: const Text("LFC", style: TextStyle(color: Colors.white)),
         centerTitle: true,
         backgroundColor: Colors.red,
+        iconTheme: IconThemeData(color: Colors.white),
       ),
       drawer: Drawer(
         child: ListView(
@@ -334,7 +335,7 @@ class _HomeState extends State<Home> {
             },
           ),
           SizedBox(
-            height: 200,
+            height: 165,
             child: PageView.builder(
               itemCount: imageUrl.length,
               controller: PageController(viewportFraction: 1),

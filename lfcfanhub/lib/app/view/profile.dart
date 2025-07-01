@@ -1,6 +1,10 @@
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:lfcfanhub/app/view/home.dart';
+import 'package:lfcfanhub/app/view/login.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -10,148 +14,175 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(appBar: AppBar(title: Text("Profile")));
-  }
-}
-
-class ProfileState extends State<Profile> {
-  final String uid = FirebaseAuth.instance.currentUser!.uid;
+  final String uid = FirebaseAuth.instance.currentUser?.uid ?? "";
   late TextEditingController nameController;
-  late TextEditingController imageURLController;
   late TextEditingController emailController;
+  late TextEditingController imageURLController;
+
   bool _isEdit = false;
-
-  Future<void> fetchUser() async {
-    try {
-      final DocumentSnapshot<Map<String, dynamic>> doc = await FirebaseFirestore
-          .instance
-          .collection('members')
-          .doc(uid)
-          .get();
-      if (doc.exists) {
-        setState(() {
-          nameController.text = doc.data()?["name"] ?? "no name";
-          imageURLController.text =
-              doc.data()?["profile_picture"] ??
-              "https://i.pinimg.com/originals/cb/a3/e2/cba3e2e64077bea3cef082d6f3bba8e0.jpg ";
-          emailController.text = doc.data()?["email"] ?? "no email";
-        });
-      } else {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text("something went wrong")));
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("something went wrong")));
-    }
-  }
-
-  Future<void> updateData() async {
-    final name = nameController.text.trim();
-    try {
-      await FirebaseFirestore.instance.collection("memberes").doc(uid).update({
-        "name": name,
-      });
-    } catch (e) {
-      // Get.snackBar("warning, Some ting when wrong");
-    }
-  }
+  File? _pickedImage;
 
   @override
   void initState() {
     super.initState();
     nameController = TextEditingController();
-    imageURLController = TextEditingController();
     emailController = TextEditingController();
+    imageURLController = TextEditingController();
+
     fetchUser();
   }
 
   @override
   void dispose() {
-    super.dispose();
     nameController.dispose();
-    imageURLController.dispose();
     emailController.dispose();
+    imageURLController.dispose();
+
+    super.dispose();
+  }
+
+  Future<void> fetchUser() async {
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('members')
+          .doc(uid)
+          .get();
+      if (doc.exists) {
+        final data = doc.data();
+        setState(() {
+          nameController.text = data?['name'] ?? 'No name';
+          emailController.text = data?['email'] ?? 'No email';
+          imageURLController.text = data?['email'] ?? 'No email';
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("เกิดข้อผิดพลาด: $e")));
+    }
+  }
+
+  Future<void> updateData() async {
+    try {
+      await FirebaseFirestore.instance.collection("members").doc(uid).update({
+        "name": nameController.text.trim(),
+      });
+      setState(() {
+        _isEdit = false;
+      });
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("อัปเดตสำเร็จ")));
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("เกิดข้อผิดพลาด: $e")));
+    }
+  }
+
+  Future<void> pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _pickedImage = File(pickedFile.path);
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("profile"), centerTitle: true),
+      appBar: AppBar(
+        title: const Text("Profile", style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.red,
+        iconTheme: const IconThemeData(color: Colors.white),
+        centerTitle: true,
+      ),
       body: Center(
         child: Column(
           children: [
-            Container(
-              width: 200,
-              height: 200,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                image: DecorationImage(
-                  image: NetworkImage(imageURLController.text),
-                ),
+            const SizedBox(height: 20),
+            GestureDetector(
+              onTap: _isEdit ? pickImage : null,
+              child: CircleAvatar(
+                radius: 100,
+                backgroundImage: _pickedImage != null
+                    ? FileImage(_pickedImage!)
+                    : NetworkImage(imageURLController.text) as ImageProvider,
               ),
             ),
+            const SizedBox(height: 16),
             _isEdit
-                ? Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: TextField(
-                          controller: nameController,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
+                ? Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextField(
+                      controller: nameController,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: "Name",
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: TextField(
-                          controller: imageURLController,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
-                      ),
-                    ],
+                    ),
                   )
                 : Text(
-                    "name ${nameController.text}",
-                    style: TextStyle(fontSize: 25),
+                    "Name: ${nameController.text}",
+                    style: const TextStyle(fontSize: 20),
                   ),
+            const SizedBox(height: 8),
             Text(
-              "email ${emailController.text}",
-              style: TextStyle(fontSize: 20),
+              "Email: ${emailController.text}",
+              style: const TextStyle(fontSize: 20),
             ),
-            Text("uid : $uid"),
+            const SizedBox(height: 16),
             _isEdit
                 ? Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            _isEdit = !_isEdit;
-                          });
-                        },
-                        child: Text("Cancel"),
+                        onPressed: () => setState(() => _isEdit = false),
+                        child: const Text("Cancel"),
                       ),
-                      ElevatedButton(onPressed: () {}, child: Text("OK")),
+                      const SizedBox(width: 10),
+                      ElevatedButton(
+                        onPressed: updateData,
+                        child: const Text("Save"),
+                      ),
                     ],
                   )
                 : ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        _isEdit = !_isEdit;
-                      });
-                    },
-                    child: Text("Edit"),
+                    onPressed: () => setState(() => _isEdit = true),
+                    child: const Text("Edit Profile"),
                   ),
           ],
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.red,
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.white70,
+        currentIndex: 1,
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle),
+            label: "Profile",
+          ),
+          BottomNavigationBarItem(icon: Icon(Icons.logout), label: "Log out"),
+        ],
+        onTap: (index) async {
+          if (index == 0) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const Home()),
+            );
+          } else if (index == 2) {
+            await FirebaseAuth.instance.signOut();
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const Login()),
+            );
+          }
+        },
       ),
     );
   }

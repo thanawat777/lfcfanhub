@@ -15,6 +15,7 @@ class _RegisterState extends State<Register> {
   late TextEditingController emailController;
   late TextEditingController passwordController;
   late TextEditingController confirmpasswordController;
+  late TextEditingController nameController;
   bool _isObscure = true;
   @override
   void initState() {
@@ -23,6 +24,7 @@ class _RegisterState extends State<Register> {
     emailController = TextEditingController();
     passwordController = TextEditingController();
     confirmpasswordController = TextEditingController();
+    nameController = TextEditingController();
   }
 
   @override
@@ -32,11 +34,13 @@ class _RegisterState extends State<Register> {
     emailController.dispose();
     passwordController.dispose();
     confirmpasswordController.dispose();
+    nameController.dispose();
   }
 
   Future<void> registerUser() async {
     final inputEmail = emailController.text.trim();
     final inputPassword = passwordController.text.trim();
+    final inputName = nameController.text.trim();
     final inputConfirmPassword = confirmpasswordController.text.trim();
 
     if (inputPassword != inputConfirmPassword) {
@@ -56,6 +60,7 @@ class _RegisterState extends State<Register> {
         await FirebaseFirestore.instance.collection("Member").doc(uid).set({
           "email": inputEmail,
           "password": inputPassword,
+          "name": inputName,
           "confirmpassword": inputConfirmPassword,
           "createdAt": FieldValue.serverTimestamp(),
         });
@@ -98,6 +103,19 @@ class _RegisterState extends State<Register> {
                 ),
               ),
               SizedBox(height: 30),
+              SizedBox(
+                width: double.infinity,
+                height: 40,
+                child: TextField(
+                  controller: nameController,
+                  style: TextStyle(fontSize: 14),
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: "name",
+                  ),
+                ),
+              ),
+              SizedBox(height: 10),
               SizedBox(
                 width: double.infinity,
                 height: 40,

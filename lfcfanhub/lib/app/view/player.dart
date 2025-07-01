@@ -44,6 +44,7 @@ class _PlayersState extends State<Players> {
       appBar: AppBar(
         title: Text("Players & Staff", style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.red,
+        iconTheme: IconThemeData(color: Colors.white),
         centerTitle: true,
       ),
       body: FutureBuilder<List<PlayerModel>>(
@@ -83,7 +84,7 @@ class _PlayersState extends State<Players> {
                           leading: CircleAvatar(
                             backgroundColor: player.shirtNumber.isNotEmpty
                                 ? Colors.red[700]
-                                : Colors.grey,
+                                : Colors.white,
                             child: player.shirtNumber.isNotEmpty
                                 ? Text(
                                     player.shirtNumber,
