@@ -1,19 +1,10 @@
-import 'dart:math';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/route_manager.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:lfcfanhub/app/model/fixtureModel.dart';
 import 'package:lfcfanhub/app/model/newsmodel.dart';
 import 'package:lfcfanhub/app/model/playerteam.dart';
-import 'package:lfcfanhub/app/view/fixture.dart';
-import 'package:lfcfanhub/app/view/news.dart';
-import 'package:lfcfanhub/app/view/player.dart';
-import 'package:lfcfanhub/app/view/profile.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -23,24 +14,31 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  int currentIndex = 0;
-
-  final List<Widget> pages = [
-    Text("", style: TextStyle(fontSize: 24)),
-    NewsPage(),
-    Players(),
-    // Fixture(),
-    Profile(),
-  ];
   final Dio dio = Dio();
-  static Future<List<NewsModel>>? futureNews;
+
+  final List<String> imageUrl = [
+    'https://www.sosyallig.com/public/uploads/haberler/269f4c2c703c0c733c69f4ae7171869b.jpg',
+    'https://st4.depositphotos.com/1980693/21115/i/450/depositphotos_211154964-stock-photo-liverpool-united-kingdom-may-2018.jpg',
+    'https://media.istockphoto.com/id/2178126829/photo/liverpool-football-club-anfield-stadium.jpg?s=612x612&w=0&k=20&c=-UxG0dCyM1dm-9Mo8yOL0dN21baOfcbqPrRG9OiO7DY=',
+  ];
+
+  Future<List<NewsModel>>? futureNews;
+  Future<List<FixtureModel>>? futureFixtures;
+  Future<List<PlayerModel>>? futurePlayer;
+
+  @override
+  void initState() {
+    super.initState();
+    futureNews = fetchLfcNews();
+    futureFixtures = fetchLfcFixture();
+    futurePlayer = fetchLfcPlayer();
+  }
+
   Future<List<NewsModel>> fetchLfcNews() async {
-    print("fetch news");
     try {
       final response = await dio.get(
         'https://backend.liverpoolfc.com/lfc-rest-api/news?perPage=20',
       );
-      print(response.statusCode);
       if (response.statusCode == 200) {
         final List newsList = response.data['results'];
         return newsList.map((json) => NewsModel.fromJson(json)).toList();
@@ -48,28 +46,21 @@ class _HomeState extends State<Home> {
         throw Exception('โหลดข่าวไม่สำเร็จ');
       }
     } catch (e) {
-      print(e);
       throw Exception('เกิดข้อผิดพลาด: $e');
     }
   }
 
-  Future<List<FixtureModel>>? futureFixtures;
   Future<List<FixtureModel>> fetchLfcFixture() async {
-    print("fetch Fixture");
     try {
       final response = await dio.get(
         'https://backend.liverpoolfc.com/lfc-rest-api/fixtures?sort=desc&teamSlug=mens&seasonYear=2025',
       );
-
       if (response.statusCode == 200) {
         final List fixtureList = response.data;
-
         List<FixtureModel> fixtures = fixtureList
             .map((json) => FixtureModel.fromJson(json))
             .toList();
-
         fixtures.sort((a, b) => a.date.compareTo(b.date));
-
         return fixtures;
       } else {
         throw Exception('โหลดข้อมูลไม่สำเร็จ');
@@ -78,8 +69,6 @@ class _HomeState extends State<Home> {
       throw Exception('เกิดข้อผิดพลาด: $e');
     }
   }
-
-  Future<List<PlayerModel>>? futurePlayer;
 
   Future<List<PlayerModel>> fetchLfcPlayer() async {
     try {
@@ -98,29 +87,13 @@ class _HomeState extends State<Home> {
   }
 
   @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    futureNews = fetchLfcNews();
-    futureFixtures = fetchLfcFixture();
-  }
-
-  void navigateTo(int index) {
-    setState(() {
-      currentIndex = index;
-    });
-    Navigator.pop(context);
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("LFC ", style: TextStyle(color: Colors.white)),
+        title: const Text("LFC", style: TextStyle(color: Colors.white)),
         centerTitle: true,
         backgroundColor: Colors.red,
       ),
-
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -128,12 +101,10 @@ class _HomeState extends State<Home> {
             const DrawerHeader(
               decoration: BoxDecoration(color: Colors.red),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   CircleAvatar(
                     radius: 30,
                     backgroundImage: AssetImage('assets/images/logoapp.png'),
-                    backgroundColor: Colors.white,
                   ),
                   SizedBox(height: 10),
                   Text(
@@ -168,250 +139,217 @@ class _HomeState extends State<Home> {
               title: const Text('Profile'),
               onTap: () => Get.toNamed('/profile'),
             ),
-            ListTile(
-              leading: const Icon(Icons.shopping_cart),
-              title: const Text('LFC Store'),
-              onTap: () async {
-                final Uri url = Uri.parse(
-                  'https://play.google.com/store/apps/details?id=com.store.liverpoolfc&hl=th',
-                );
-                if (!await launchUrl(url)) {
-                  throw 'Could not launch $url';
-                }
-              },
-            ),
           ],
         ),
       ),
-
-      body: Column(
+      body: ListView(
         children: [
-          Expanded(
-            child: FutureBuilder(
-              future: futureNews,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Text("error");
-                } else {
-                  return ListView.builder(
-                    itemCount: 1,
-                    itemBuilder: (context, index) {
-                      final title = snapshot.data?[index].title;
-                      final image = snapshot.data?[index].image;
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: GestureDetector(
-                          onTap: () {
-                            Get.toNamed("/news");
-                          },
-                          child: Card(
-                            shape: BeveledRectangleBorder(
-                              borderRadius: BorderRadiusGeometry.vertical(),
-                            ),
-                            child: Column(
-                              children: [
-                                Container(
-                                  height: 220,
-
-                                  width: double.infinity,
-                                  color: Colors.blue,
-                                  child: Image.network(image ?? "no content"),
-                                ),
-                                Text(
-                                  title ?? "no content",
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
+          FutureBuilder<List<NewsModel>>(
+            future: futureNews,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(20),
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              } else if (snapshot.hasError ||
+                  !snapshot.hasData ||
+                  snapshot.data!.isEmpty) {
+                return const Padding(
+                  padding: EdgeInsets.all(20),
+                  child: Text("ไม่พบข่าว"),
+                );
+              } else {
+                final news = snapshot.data![0];
+                return GestureDetector(
+                  onTap: () => Get.toNamed("/news"),
+                  child: Card(
+                    margin: const EdgeInsets.all(12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Image.network(
+                          news.image,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Text(
+                            news.title,
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
-                      );
-                    },
-                  );
-                }
-              },
-            ),
+                      ],
+                    ),
+                  ),
+                );
+              }
+            },
           ),
 
-          Expanded(
-            child: FutureBuilder<List<FixtureModel>>(
-              future: futureFixtures,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return const Center(
-                    child: Text("เกิดข้อผิดพลาดในการโหลดข้อมูล"),
-                  );
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(child: Text("ไม่มีข้อมูล"));
-                } else {
-                  return ListView.builder(
-                    itemCount: 1,
-                    itemBuilder: (context, index) {
-                      final fixture = snapshot.data![index];
-                      return GestureDetector(
-                        onTap: () {
-                          Get.toNamed("/fixture");
-                        },
-                        child: Card(
-                          margin: const EdgeInsets.symmetric(
-                            horizontal: 5,
-                            vertical: 8,
-                          ),
-                          elevation: 2,
-                          child: Padding(
-                            padding: const EdgeInsets.all(12),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Expanded(
-                                  child: Column(
-                                    children: [
-                                      Image.network(
-                                        fixture.homeTeamLogo,
-                                        height: 40,
-                                      ),
-                                      const SizedBox(height: 5),
-                                      Text(
-                                        fixture.homeTeam ?? "",
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Column(
-                                    children: [
-                                      Text(
-                                        fixture.premier +
-                                            '\n ' +
-                                            DateFormat(
-                                              ' d MMMM y',
-                                            ).format(fixture.date.toLocal()),
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 14,
-                                        ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                      const SizedBox(height: 6),
-
-                                      const SizedBox(height: 6),
-                                      Text(
-                                        DateFormat(
-                                          'HH:mm',
-                                        ).format(fixture.date.toLocal()),
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-
-                                        textAlign: TextAlign.center,
-                                      ),
-                                      Text(
-                                        'Stadium:  ' + fixture.stadium ?? "",
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: Colors.grey,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Column(
-                                    children: [
-                                      Image.network(
-                                        fixture.awayTeamLogo ?? "",
-                                        height: 40,
-                                      ),
-                                      const SizedBox(height: 5),
-                                      Text(
-                                        fixture.awayTeam,
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  );
-                }
-              },
-            ),
-          ),
-          Expanded(
-            child: FutureBuilder<List<PlayerModel>>(
-              future: futurePlayer,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text("เกิดข้อผิดพลาดในการโหลดข้อมูล"));
-                } else {
-                  return ListView.separated(
-                    separatorBuilder: (context, index) =>
-                        Divider(color: Colors.red),
-                    itemCount: 1,
-                    itemBuilder: (context, index) {
-                      final player = snapshot.data![index];
-
-                      return Row(
+          FutureBuilder<List<FixtureModel>>(
+            future: futureFixtures,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(20),
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              } else if (snapshot.hasError ||
+                  !snapshot.hasData ||
+                  snapshot.data!.isEmpty) {
+                return const Padding(
+                  padding: EdgeInsets.all(20),
+                  child: Text("ไม่พบข้อมูลการแข่งขัน"),
+                );
+              } else {
+                final fixture = snapshot.data![0];
+                return GestureDetector(
+                  onTap: () => Get.toNamed("/fixture"),
+                  child: Card(
+                    margin: const EdgeInsets.all(12),
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Row(
                         children: [
                           Expanded(
-                            child: ListTile(
-                              selectedColor: Colors.blue,
-                              contentPadding: EdgeInsets.symmetric(
-                                vertical: 30,
-                                horizontal: 16,
-                              ),
-                              leading: CircleAvatar(
-                                backgroundColor: Colors.red[700],
-                                child: Text(
-                                  player.shirtNumber,
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                              title: Text(
-                                player.name,
-                                style: TextStyle(fontSize: 20),
-                              ),
-                              subtitle: Text("Position: ${player.position}"),
-                              // trailing: Image.network(
-                              //   player.profilepicture,
-                              //   width: 100,
-                              //   height: 300,
-                              // ),
+                            child: Column(
+                              children: [
+                                Image.network(fixture.homeTeamLogo, height: 40),
+                                Text(fixture.homeTeam),
+                              ],
                             ),
                           ),
-                          SizedBox(
-                            width: 100,
-                            height: 100,
-                            child: Image.network(
-                              player.profilepicture,
-                              fit: BoxFit.cover,
+                          Expanded(
+                            child: Column(
+                              children: [
+                                Text(
+                                  fixture.premier +
+                                      '\n ' +
+                                      DateFormat(
+                                        ' d MMMM y',
+                                      ).format(fixture.date.toLocal()),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 11,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(height: 6),
+
+                                const SizedBox(height: 6),
+                                Text(
+                                  DateFormat(
+                                    'HH:mm',
+                                  ).format(fixture.date.toLocal()),
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+
+                                  textAlign: TextAlign.center,
+                                ),
+                                Text(
+                                  'Stadium:  ' + fixture.stadium ?? "",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            child: Column(
+                              children: [
+                                Image.network(fixture.awayTeamLogo, height: 40),
+                                Text(fixture.awayTeam),
+                              ],
                             ),
                           ),
                         ],
-                      );
-                    },
-                  );
-                }
+                      ),
+                    ),
+                  ),
+                );
+              }
+            },
+          ),
+
+          FutureBuilder<List<PlayerModel>>(
+            future: futurePlayer,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(20),
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              } else if (snapshot.hasError ||
+                  !snapshot.hasData ||
+                  snapshot.data!.isEmpty) {
+                return const Padding(
+                  padding: EdgeInsets.all(20),
+                  child: Text("ไม่พบข้อมูลนักเตะ"),
+                );
+              } else {
+                final player = snapshot.data![0];
+                return GestureDetector(
+                  onTap: () => Get.toNamed("/player"),
+                  child: Card(
+                    margin: const EdgeInsets.all(12),
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.red,
+                        child: Text(
+                          player.shirtNumber,
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      ),
+                      title: Text(player.name),
+                      subtitle: Text('Position: ${player.position}'),
+                      trailing: Image.network(
+                        player.profilepicture,
+                        width: 60,
+                        height: 60,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                );
+              }
+            },
+          ),
+          SizedBox(
+            height: 200,
+            child: PageView.builder(
+              itemCount: imageUrl.length,
+              controller: PageController(viewportFraction: 1),
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 3),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.network(
+                      imageUrl[index],
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                    ),
+                  ),
+                );
               },
             ),
           ),

@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:lfcfanhub/app/controller/webview.dart';
 
 import 'package:lfcfanhub/app/model/playerteam.dart';
 
@@ -58,33 +59,48 @@ class _PlayersState extends State<Players> {
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
                 final player = snapshot.data![index];
+                final url = snapshot.data?[index].url;
 
                 return Row(
                   children: [
                     Expanded(
-                      child: ListTile(
-                        selectedColor: Colors.blue,
-                        contentPadding: EdgeInsets.symmetric(
-                          vertical: 30,
-                          horizontal: 16,
-                        ),
-                        leading: CircleAvatar(
-                          backgroundColor: Colors.red[700],
-                          child: Text(
-                            player.shirtNumber,
-                            style: TextStyle(fontSize: 15, color: Colors.white),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  MyWebViewPage(url: url.toString()),
+                            ),
+                          );
+                        },
+                        child: ListTile(
+                          selectedColor: Colors.blue,
+                          contentPadding: EdgeInsets.symmetric(
+                            vertical: 30,
+                            horizontal: 16,
                           ),
+                          leading: CircleAvatar(
+                            backgroundColor: Colors.red[700],
+                            child: Text(
+                              player.shirtNumber,
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                          title: Text(
+                            player.name,
+                            style: TextStyle(fontSize: 20),
+                          ),
+                          subtitle: Text("Position: ${player.position}"),
+                          // trailing: Image.network(
+                          //   player.profilepicture,
+                          //   width: 100,
+                          //   height: 300,
+                          // ),
                         ),
-                        title: Text(
-                          player.name,
-                          style: TextStyle(fontSize: 20),
-                        ),
-                        subtitle: Text("Position: ${player.position}"),
-                        // trailing: Image.network(
-                        //   player.profilepicture,
-                        //   width: 100,
-                        //   height: 300,
-                        // ),
                       ),
                     ),
                     SizedBox(
