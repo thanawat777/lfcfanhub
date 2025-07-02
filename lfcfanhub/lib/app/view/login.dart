@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lfcfanhub/app/view/forgotpassword.dart';
@@ -48,6 +49,13 @@ class _LoginState extends State<Login> {
         password: password,
       );
       UserStorage().collectUserId(response.user!.uid);
+      final userdata = await FirebaseFirestore.instance
+          .collection('Member')
+          .doc(response.user!.uid)
+          .get();
+
+      UserStorage().collectUserdata(userdata.data());
+
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text("Login Success!")));

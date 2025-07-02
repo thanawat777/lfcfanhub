@@ -3,6 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:lfcfanhub/app/controller/upload_image.dart';
 import 'package:lfcfanhub/app/view/home.dart';
 import 'package:lfcfanhub/app/view/login.dart';
 import 'package:lfcfanhub/service/storage.dart';
@@ -16,9 +17,9 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
   final String uid = FirebaseAuth.instance.currentUser?.uid ?? "";
-  late TextEditingController nameController;
-  late TextEditingController emailController;
-  late TextEditingController imageURLController;
+  TextEditingController nameController = TextEditingController();
+  // TextEditingController emailController = TextEditingController();
+  // TextEditingController imageURLController = TextEditingController();
 
   bool _isEdit = false;
   File? _pickedImage;
@@ -26,47 +27,26 @@ class _ProfileState extends State<Profile> {
   @override
   void initState() {
     super.initState();
-    nameController = TextEditingController();
-    emailController = TextEditingController();
-    imageURLController = TextEditingController();
-
-    fetchUser();
+    nameController.text = UserStorage().box.read("name") ?? "";
+    print(UserStorage().box.read("name"));
   }
 
   @override
   void dispose() {
     nameController.dispose();
-    emailController.dispose();
-    imageURLController.dispose();
 
     super.dispose();
   }
 
-  Future<void> fetchUser() async {
-    try {
-      final doc = await FirebaseFirestore.instance
-          .collection('members')
-          .doc(uid)
-          .get();
-      if (doc.exists) {
-        final data = doc.data();
-        setState(() {
-          nameController.text = data?['name'] ?? 'No name';
-          emailController.text = data?['email'] ?? 'No email';
-          imageURLController.text = data?['email'] ?? 'No email';
-        });
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("เกิดข้อผิดพลาด: $e")));
-    }
-  }
-
   Future<void> updateData() async {
+    UserStorage().box.write("name", nameController.text.trim());
+    final imageUrl = await UploadImg().uploadImage(_pickedImage);
+    UserStorage().box.write('image', imageUrl);
+
     try {
-      await FirebaseFirestore.instance.collection("members").doc(uid).update({
+      await FirebaseFirestore.instance.collection("Member").doc(uid).update({
         "name": nameController.text.trim(),
+        'image': imageUrl,
       });
       setState(() {
         _isEdit = false;
@@ -106,11 +86,18 @@ class _ProfileState extends State<Profile> {
             const SizedBox(height: 20),
             GestureDetector(
               onTap: _isEdit ? pickImage : null,
-              child: CircleAvatar(
-                radius: 100,
-                backgroundImage: _pickedImage != null
-                    ? FileImage(_pickedImage!)
-                    : NetworkImage(imageURLController.text) as ImageProvider,
+              child: Stack(
+                children: [
+                  CircleAvatar(
+                    radius: 80,
+                    backgroundImage: _pickedImage != null
+                        ? FileImage(_pickedImage!)
+                        : NetworkImage(UserStorage().box.read("image"))
+                              as ImageProvider,
+                  ),
+                  if (_isEdit)
+                    Positioned(bottom: 0, right: 0, child: Icon(Icons.edit)),
+                ],
               ),
             ),
             const SizedBox(height: 16),
@@ -131,7 +118,7 @@ class _ProfileState extends State<Profile> {
                   ),
             const SizedBox(height: 8),
             Text(
-              "Email: ${emailController.text}",
+              "Email: ${UserStorage().box.read("email")}",
               style: const TextStyle(fontSize: 20),
             ),
             const SizedBox(height: 16),
@@ -178,7 +165,7 @@ class _ProfileState extends State<Profile> {
             );
           } else if (index == 2) {
             await FirebaseAuth.instance.signOut();
-            UserStorage().box.remove('user');
+            UserStorage().logout();
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => const Login()),

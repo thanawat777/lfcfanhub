@@ -13,4 +13,17 @@ class UserStorage {
       return true;
     }
   }
+
+  void collectUserdata(Map<String, dynamic>? data) {
+    box.write('name', data?["name"]);
+    box.write('email', data?['email']);
+    box.write('image', data?['image']);
+  }
+
+  void logout() {
+    box.remove('name');
+    box.remove('user');
+    box.remove('email');
+    box.remove('image');
+  }
 }

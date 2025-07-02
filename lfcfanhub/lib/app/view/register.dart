@@ -60,6 +60,8 @@ class _RegisterState extends State<Register> {
         await FirebaseFirestore.instance.collection("Member").doc(uid).set({
           "email": inputEmail,
           "name": inputName,
+          'image':
+              'https://res.cloudinary.com/dbffnm2ha/image/upload/v1751432174/bea22eec-b70c-4430-85fd-9bea8008f638_yabags.avif',
           "createdAt": FieldValue.serverTimestamp(),
         });
         ScaffoldMessenger.of(
