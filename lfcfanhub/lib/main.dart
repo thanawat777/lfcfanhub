@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:get_storage/get_storage.dart';
+import 'package:lfcfanhub/app/view/favorite.dart';
 
 import 'package:lfcfanhub/app/view/fixture.dart';
 import 'package:lfcfanhub/app/view/home.dart';
@@ -40,6 +41,10 @@ class MyApp extends StatelessWidget {
         GetPage(name: '/player', page: () => Players()),
         GetPage(name: '/profile', page: () => Profile()),
         GetPage(name: '/fixture', page: () => FixturePage()),
+        GetPage(
+          name: '/favorite',
+          page: () => FavoritePage(favoriteFixtures: []),
+        ),
       ],
     );
   }

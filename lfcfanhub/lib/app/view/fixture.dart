@@ -1,7 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
 import 'package:dio/dio.dart';
+import 'package:lfcfanhub/app/view/favorite.dart';
 import 'package:lfcfanhub/app/model/fixtureModel.dart';
 
 class FixturePage extends StatefulWidget {
@@ -16,6 +19,7 @@ class _FixturePageState extends State<FixturePage> {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
   Set<int> starredMatches = {};
+
   Future<List<FixtureModel>>? futureFixtures;
 
   Future<List<FixtureModel>> fetchLfcFixture() async {
@@ -42,6 +46,37 @@ class _FixturePageState extends State<FixturePage> {
     }
   }
 
+  Future<void> addFavorite(FixtureModel fixture) async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+
+    if (uid == null) return;
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('favorites')
+        .doc(fixture.id.toString())
+        .set({
+          'fixtureId': fixture.id,
+          'homeTeam': fixture.homeTeam,
+          'awayTeam': fixture.awayTeam,
+          'date': fixture.date.toIso8601String(),
+          'stadium': fixture.stadium,
+        });
+  }
+
+  Future<void> removeFavorite(String fixtureId) async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return;
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('favorites')
+        .doc(fixtureId)
+        .delete();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -56,10 +91,28 @@ class _FixturePageState extends State<FixturePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Fixture", style: TextStyle(color: Colors.white)),
+        title: const Text("Fixtures", style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.red,
-        iconTheme: const IconThemeData(color: Colors.white),
-        centerTitle: true,
+        iconTheme: IconThemeData(color: Colors.white),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.star),
+
+            onPressed: () async {
+              final fixtures = await futureFixtures;
+              Set<String> favoriteIds = {};
+              final favs = fixtures!
+                  .where((f) => favoriteIds.contains(f.id.toString()))
+                  .toList();
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => FavoritePage(favoriteFixtures: favs),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: FutureBuilder<List<FixtureModel>>(
         future: futureFixtures,
@@ -77,6 +130,7 @@ class _FixturePageState extends State<FixturePage> {
                 final fixture = snapshot.data![index];
                 final isStarred = starredMatches.contains(index);
                 final stringWord = fixture.premier;
+
                 final date = DateFormat(
                   'd MMMM y',
                 ).format(fixture.date.toLocal());
@@ -131,7 +185,7 @@ class _FixturePageState extends State<FixturePage> {
                                     textAlign: TextAlign.center,
                                   ),
                                   Text(
-                                    'Stadium:    ${fixture.stadium}',
+                                    'Stadium: ${fixture.stadium}',
                                     textAlign: TextAlign.center,
                                     style: const TextStyle(
                                       fontSize: 12,

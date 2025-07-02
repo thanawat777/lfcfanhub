@@ -140,6 +140,11 @@ class _HomeState extends State<Home> {
               title: const Text('Profile'),
               onTap: () => Get.toNamed('/profile'),
             ),
+            ListTile(
+              leading: const Icon(Icons.star),
+              title: const Text('Favorite'),
+              onTap: () => Get.toNamed('/favorite'),
+            ),
           ],
         ),
       ),
