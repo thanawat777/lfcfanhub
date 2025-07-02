@@ -59,9 +59,7 @@ class _RegisterState extends State<Register> {
         final String uid = userInfo.user!.uid;
         await FirebaseFirestore.instance.collection("Member").doc(uid).set({
           "email": inputEmail,
-          "password": inputPassword,
           "name": inputName,
-          "confirmpassword": inputConfirmPassword,
           "createdAt": FieldValue.serverTimestamp(),
         });
         ScaffoldMessenger.of(

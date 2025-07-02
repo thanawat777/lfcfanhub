@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:lfcfanhub/app/view/forgotpassword.dart';
 import 'package:lfcfanhub/app/view/home.dart';
 import 'package:lfcfanhub/app/view/register.dart';
+import 'package:lfcfanhub/service/storage.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -42,10 +43,11 @@ class _LoginState extends State<Login> {
     }
 
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
+      final response = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
+      UserStorage().collectUserId(response.user!.uid);
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text("Login Success!")));

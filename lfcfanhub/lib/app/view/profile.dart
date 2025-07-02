@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lfcfanhub/app/view/home.dart';
 import 'package:lfcfanhub/app/view/login.dart';
+import 'package:lfcfanhub/service/storage.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -177,6 +178,7 @@ class _ProfileState extends State<Profile> {
             );
           } else if (index == 2) {
             await FirebaseAuth.instance.signOut();
+            UserStorage().box.remove('user');
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => const Login()),
