@@ -134,7 +134,7 @@ class _RegisterState extends State<Register> {
                 height: 40,
                 child: TextField(
                   controller: passwordController,
-                  obscureText: true,
+                  obscureText: _isObscure,
                   style: TextStyle(fontSize: 14),
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
@@ -158,7 +158,7 @@ class _RegisterState extends State<Register> {
                 height: 40,
                 child: TextField(
                   controller: confirmpasswordController,
-                  obscureText: true,
+                  obscureText: _isObscure,
                   style: TextStyle(fontSize: 14),
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),

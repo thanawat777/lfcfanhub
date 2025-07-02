@@ -1,4 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:lfcfanhub/app/view/login.dart';
 
 class ForGotpassword extends StatefulWidget {
   const ForGotpassword({super.key});
@@ -24,8 +27,20 @@ class _ForGotpasswordState extends State<ForGotpassword> {
     emailController.dispose();
   }
 
-  Future<void> registerUser() async {
-    final inputEmail = emailController.text.trim();
+  Future<void> regsetPassword() async {
+    // final inputEmail = emailController.text.trim();
+    // await FirebaseAuth.instance.sendPasswordResetEmail(email: inputEmail);
+    Get.defaultDialog(
+      title: 'Resent Email complete',
+      titleStyle: TextStyle(color: Colors.white),
+      middleText: "plese check your Email",
+      backgroundColor: Colors.red,
+      textConfirm: "OKAY",
+
+      onConfirm: () {
+        Get.toNamed("/login");
+      },
+    );
   }
 
   @override
@@ -76,8 +91,9 @@ class _ForGotpasswordState extends State<ForGotpassword> {
                     ),
                   ),
                   ElevatedButton(
-                    onPressed: registerUser,
+                    onPressed: regsetPassword,
                     child: Text("Reset Password"),
+
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red,
                       foregroundColor: Colors.white,
