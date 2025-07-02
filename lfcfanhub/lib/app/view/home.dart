@@ -262,7 +262,7 @@ class _HomeState extends State<Home> {
                                   textAlign: TextAlign.center,
                                 ),
                                 Text(
-                                  'Stadium:  ' + fixture.stadium ?? "",
+                                  'Stadium: ${fixture.stadium} ',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontSize: 12,

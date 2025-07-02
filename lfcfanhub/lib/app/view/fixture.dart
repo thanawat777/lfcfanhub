@@ -1,7 +1,3 @@
-import 'dart:io';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
@@ -80,7 +76,10 @@ class _FixturePageState extends State<FixturePage> {
               itemBuilder: (context, index) {
                 final fixture = snapshot.data![index];
                 final isStarred = starredMatches.contains(index);
-
+                final stringWord = fixture.premier;
+                final date = DateFormat(
+                  'd MMMM y',
+                ).format(fixture.date.toLocal());
                 return Card(
                   margin: const EdgeInsets.symmetric(
                     horizontal: 12,
@@ -103,7 +102,7 @@ class _FixturePageState extends State<FixturePage> {
                                   ),
                                   const SizedBox(height: 5),
                                   Text(
-                                    fixture.homeTeam ?? "",
+                                    fixture.homeTeam,
                                     textAlign: TextAlign.center,
                                   ),
                                 ],
@@ -113,11 +112,7 @@ class _FixturePageState extends State<FixturePage> {
                               child: Column(
                                 children: [
                                   Text(
-                                    fixture.premier +
-                                        '\n ' +
-                                        DateFormat(
-                                          'd MMMM y',
-                                        ).format(fixture.date.toLocal()),
+                                    "$stringWord \n $date",
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 11,
@@ -136,7 +131,7 @@ class _FixturePageState extends State<FixturePage> {
                                     textAlign: TextAlign.center,
                                   ),
                                   Text(
-                                    'Stadium:  ' + fixture.stadium ?? "",
+                                    'Stadium:    ${fixture.stadium}',
                                     textAlign: TextAlign.center,
                                     style: const TextStyle(
                                       fontSize: 12,
@@ -150,7 +145,7 @@ class _FixturePageState extends State<FixturePage> {
                               child: Column(
                                 children: [
                                   Image.network(
-                                    fixture.awayTeamLogo ?? "",
+                                    fixture.awayTeamLogo,
                                     height: 40,
                                   ),
                                   const SizedBox(height: 5),

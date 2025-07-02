@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:lfcfanhub/app/view/forgotpassword.dart';
-import 'package:lfcfanhub/app/view/home.dart';
 import 'package:lfcfanhub/app/view/register.dart';
 import 'package:lfcfanhub/service/storage.dart';
 
@@ -55,14 +55,8 @@ class _LoginState extends State<Login> {
           .get();
 
       UserStorage().collectUserdata(userdata.data());
-
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Login Success!")));
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => Home()),
-      );
+      Get.snackbar("Success", "Login complete");
+      Get.toNamed("/");
     } on FirebaseAuthException catch (e) {
       String message = "Login failed";
       if (e.code == 'user-not-found') {
@@ -70,10 +64,7 @@ class _LoginState extends State<Login> {
       } else if (e.code == 'wrong-password') {
         message = "รหัสผ่านไม่ถูกต้อง";
       }
-
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(message)));
+      Get.snackbar('error', message);
     }
   }
 
