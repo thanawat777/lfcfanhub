@@ -12,6 +12,7 @@ class FavoritePage extends StatefulWidget {
 }
 
 class _FavoritePageState extends State<FavoritePage> {
+  Set<String> favoriteIds = {};
   Future<List<FixtureModel>> fetchFavoritesFromFirebase() async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return [];
@@ -37,6 +38,25 @@ class _FavoritePageState extends State<FavoritePage> {
         favorite: true,
       );
     }).toList();
+  }
+
+  Future<void> removeFavorite(String fixtureId) async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('คุณไม่ได้เข้าสู่ระบบ')));
+      }
+      return;
+    }
+
+    await FirebaseFirestore.instance
+        .collection('favorites')
+        .doc(uid)
+        .collection('match')
+        .doc(fixtureId)
+        .delete();
   }
 
   @override
@@ -66,6 +86,7 @@ class _FavoritePageState extends State<FavoritePage> {
               itemCount: favoriteFixtures.length,
               itemBuilder: (context, index) {
                 final fixture = favoriteFixtures[index];
+                final isStarred = fixture.favorite;
                 final date = DateFormat(
                   'd MMMM y',
                 ).format(fixture.date.toLocal());
@@ -145,6 +166,30 @@ class _FavoritePageState extends State<FavoritePage> {
                                   ),
                                 ],
                               ),
+                            ),
+                            IconButton(
+                              icon: Icon(
+                                isStarred ? Icons.star : Icons.star_border,
+                                color: isStarred
+                                    ? Colors.yellow[800]
+                                    : Colors.grey,
+                              ),
+                              onPressed: () async {
+                                final id = fixture.id.toString();
+                                if (fixture.favorite) {
+                                  setState(() {
+                                    fixture.favorite = false;
+                                    favoriteIds.remove(id);
+                                  });
+                                  await removeFavorite(id);
+                                } else {
+                                  setState(() {
+                                    fixture.favorite = true;
+                                    favoriteIds.add(id);
+                                  });
+                                  // await addFavorite(fixture);
+                                }
+                              },
                             ),
                           ],
                         ),
