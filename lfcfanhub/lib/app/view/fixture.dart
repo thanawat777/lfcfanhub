@@ -16,11 +16,28 @@ class FixturePage extends StatefulWidget {
 
 class _FixturePageState extends State<FixturePage> {
   final Dio dio = Dio();
+
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
   Set<int> starredMatches = {};
+  Set<String> favoriteIds = {};
 
   Future<List<FixtureModel>>? futureFixtures;
+
+  @override
+  void initState() {
+    super.initState();
+
+    fetchFavoriteIds().then((_) {
+      setState(() {
+        futureFixtures = fetchLfcFixture();
+      });
+    });
+
+    const android = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const settings = InitializationSettings(android: android);
+    flutterLocalNotificationsPlugin.initialize(settings);
+  }
 
   Future<List<FixtureModel>> fetchLfcFixture() async {
     try {
@@ -37,24 +54,42 @@ class _FixturePageState extends State<FixturePage> {
 
         fixtures.sort((a, b) => a.date.compareTo(b.date));
 
+        final favSetInt = favoriteIds
+            .map((id) => int.tryParse(id))
+            .whereType<int>()
+            .toSet();
+
+        for (var e in fixtures) {
+          if (favSetInt.contains(e.id)) {
+            e.favorite = true;
+          }
+        }
+
         return fixtures;
       } else {
-        throw Exception('โหลดข้อมูลไม่สำเร็จ');
+        throw Exception('โหลดข้อมูลไม่สำเร็จ (Failed to load data)');
       }
     } catch (e) {
-      throw Exception('เกิดข้อผิดพลาด: $e');
+      throw Exception('เกิดข้อผิดพลาด: $e (An error occurred: $e)');
     }
   }
 
   Future<void> addFavorite(FixtureModel fixture) async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
 
-    if (uid == null) return;
+    if (uid == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('กรุณาเข้าสู่ระบบเพื่อเพิ่มรายการโปรด')),
+        );
+      }
+      return;
+    }
 
     await FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
         .collection('favorites')
+        .doc(uid)
+        .collection('match')
         .doc(fixture.id.toString())
         .set({
           'fixtureId': fixture.id,
@@ -62,29 +97,60 @@ class _FixturePageState extends State<FixturePage> {
           'awayTeam': fixture.awayTeam,
           'date': fixture.date.toIso8601String(),
           'stadium': fixture.stadium,
+
+          'title': fixture.title,
+          'premier': fixture.premier,
+          'homeTeamLogo': fixture.homeTeamLogo,
+          'awayTeamLogo': fixture.awayTeamLogo,
         });
   }
 
   Future<void> removeFavorite(String fixtureId) async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
-    if (uid == null) return;
+    if (uid == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('คุณไม่ได้เข้าสู่ระบบ')));
+      }
+      return;
+    }
 
     await FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
         .collection('favorites')
+        .doc(uid)
+        .collection('match')
         .doc(fixtureId)
         .delete();
   }
 
-  @override
-  void initState() {
-    super.initState();
-    futureFixtures = fetchLfcFixture();
+  Future<void> fetchFavoriteIds() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) {
+      setState(() {
+        favoriteIds = {};
+      });
+      return;
+    }
 
-    const android = AndroidInitializationSettings('@mipmap/ic_launcher');
-    const settings = InitializationSettings(android: android);
-    flutterLocalNotificationsPlugin.initialize(settings);
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('favorites')
+          .doc(uid)
+          .collection('match')
+          .get();
+
+      setState(() {
+        favoriteIds = snapshot.docs.map((doc) => doc.id).toSet();
+      });
+    } catch (e) {
+      print("Error fetching favorite IDs: $e");
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('เกิดข้อผิดพลาดในการโหลดรายการโปรด: $e')),
+        );
+      }
+    }
   }
 
   @override
@@ -93,22 +159,15 @@ class _FixturePageState extends State<FixturePage> {
       appBar: AppBar(
         title: const Text("Fixtures", style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.red,
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.white),
+        centerTitle: true,
         actions: [
           IconButton(
             icon: const Icon(Icons.star),
-
             onPressed: () async {
-              final fixtures = await futureFixtures;
-              Set<String> favoriteIds = {};
-              final favs = fixtures!
-                  .where((f) => favoriteIds.contains(f.id.toString()))
-                  .toList();
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (_) => FavoritePage(favoriteFixtures: favs),
-                ),
+                MaterialPageRoute(builder: (_) => const FavoritePage()),
               );
             },
           ),
@@ -120,7 +179,9 @@ class _FixturePageState extends State<FixturePage> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return const Center(child: Text("เกิดข้อผิดพลาดในการโหลดข้อมูล"));
+            return Center(
+              child: Text("เกิดข้อผิดพลาดในการโหลดข้อมูล: ${snapshot.error}"),
+            );
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(child: Text("ไม่มีข้อมูล"));
           } else {
@@ -128,12 +189,13 @@ class _FixturePageState extends State<FixturePage> {
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
                 final fixture = snapshot.data![index];
-                final isStarred = starredMatches.contains(index);
+                final isStarred = fixture.favorite;
                 final stringWord = fixture.premier;
 
                 final date = DateFormat(
                   'd MMMM y',
                 ).format(fixture.date.toLocal());
+
                 return Card(
                   margin: const EdgeInsets.symmetric(
                     horizontal: 12,
@@ -217,14 +279,21 @@ class _FixturePageState extends State<FixturePage> {
                                     ? Colors.yellow[800]
                                     : Colors.grey,
                               ),
-                              onPressed: () {
-                                setState(() {
-                                  if (isStarred) {
-                                    starredMatches.remove(index);
-                                  } else {
-                                    starredMatches.add(index);
-                                  }
-                                });
+                              onPressed: () async {
+                                final id = fixture.id.toString();
+                                if (fixture.favorite) {
+                                  setState(() {
+                                    fixture.favorite = false;
+                                    favoriteIds.remove(id);
+                                  });
+                                  await removeFavorite(id);
+                                } else {
+                                  setState(() {
+                                    fixture.favorite = true;
+                                    favoriteIds.add(id);
+                                  });
+                                  await addFavorite(fixture);
+                                }
                               },
                             ),
                           ],

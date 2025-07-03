@@ -11,6 +11,7 @@ class FixtureModel {
   final String homeTeamLogo;
   final String awayTeamLogo;
   final DateTime date;
+  bool favorite;
   // final String competitionName;
   // final String competitionLogo;
 
@@ -24,6 +25,7 @@ class FixtureModel {
     required this.stadium,
     required this.homeTeamLogo,
     required this.awayTeamLogo,
+    required this.favorite,
     // required this.competitionName,
     // required this.competitionLogo,
   });
@@ -41,6 +43,7 @@ class FixtureModel {
       awayTeamLogo: match['awayTeamLogo']?['sizes']?['sm']?['url'] ?? '',
       date: DateTime.parse(match['date'] ?? DateTime.now().toString()),
       stadium: match['stadium'] ?? '',
+      favorite: false,
     );
   }
 }

@@ -19,6 +19,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   await GetStorage.init();
+
   runApp(const MyApp());
 }
 
@@ -41,10 +42,7 @@ class MyApp extends StatelessWidget {
         GetPage(name: '/player', page: () => Players()),
         GetPage(name: '/profile', page: () => Profile()),
         GetPage(name: '/fixture', page: () => FixturePage()),
-        GetPage(
-          name: '/favorite',
-          page: () => FavoritePage(favoriteFixtures: []),
-        ),
+        GetPage(name: '/favorite', page: () => FavoritePage()),
       ],
     );
   }
