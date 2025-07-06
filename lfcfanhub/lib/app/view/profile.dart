@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -112,14 +113,20 @@ class _ProfileState extends State<Profile> {
                       ),
                     ),
                   )
-                : Text(
-                    "Name: ${nameController.text}",
-                    style: const TextStyle(fontSize: 20),
+                : Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      nameController.text,
+                      style: const TextStyle(
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
             const SizedBox(height: 8),
             Text(
-              "Email: ${UserStorage().box.read("email")}",
-              style: const TextStyle(fontSize: 20),
+              "email: ${UserStorage().box.read("email")}",
+              style: const TextStyle(fontSize: 20, color: Colors.grey),
             ),
             const SizedBox(height: 16),
             _isEdit
@@ -137,10 +144,34 @@ class _ProfileState extends State<Profile> {
                       ),
                     ],
                   )
-                : ElevatedButton(
-                    onPressed: () => setState(() => _isEdit = true),
-                    child: const Text("Edit Profile"),
+                : Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
+                      ),
+                      onPressed: () => setState(() => _isEdit = true),
+                      child: const Text(
+                        "Edit Profile",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
                   ),
+
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () {
+                Get.toNamed('/favorite');
+              },
+              child: const Text(
+                "Favorite Match",
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
           ],
         ),
       ),

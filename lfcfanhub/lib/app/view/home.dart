@@ -106,6 +106,7 @@ class _HomeState extends State<Home> {
                   CircleAvatar(
                     radius: 30,
                     backgroundImage: AssetImage('assets/images/logoapp.png'),
+                    backgroundColor: Colors.white,
                   ),
                   SizedBox(height: 10),
                   Text(
@@ -340,7 +341,7 @@ class _HomeState extends State<Home> {
             },
           ),
           SizedBox(
-            height: 165,
+            height: 200,
             child: PageView.builder(
               itemCount: imageUrl.length,
               controller: PageController(viewportFraction: 1),
