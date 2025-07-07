@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
 import 'package:lfcfanhub/app/model/newsmodel.dart';
 import 'package:lfcfanhub/app/controller/webview.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class NewsPage extends StatefulWidget {
   const NewsPage({super.key});
@@ -32,6 +33,17 @@ class _NewsPageState extends State<NewsPage> {
     }
   }
 
+  void _launchStore() async {
+    final url = Uri.parse(
+      'https://play.google.com/store/apps/developer?id=Liverpool+Football+Club',
+    );
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -47,6 +59,68 @@ class _NewsPageState extends State<NewsPage> {
         centerTitle: true,
         backgroundColor: Colors.red,
         iconTheme: IconThemeData(color: Colors.white),
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(color: Colors.red),
+              child: Column(
+                children: [
+                  CircleAvatar(
+                    radius: 30,
+                    backgroundImage: AssetImage('assets/images/logoapp.png'),
+                    backgroundColor: Colors.white,
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    'Liverpool FC',
+                    style: TextStyle(color: Colors.white, fontSize: 20),
+                  ),
+                ],
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.home),
+              title: const Text('Home'),
+              onTap: () => Get.toNamed('/'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.newspaper),
+              title: const Text('News'),
+              onTap: () => Get.toNamed('/news'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.people),
+              title: const Text('Players'),
+              onTap: () => Get.toNamed('/player'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.event),
+              title: const Text('Fixtures'),
+              onTap: () => Get.toNamed('/fixture'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.person),
+              title: const Text('Profile'),
+              onTap: () => Get.toNamed('/profile'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.star),
+              title: const Text('Favorite'),
+              onTap: () => Get.toNamed('/favorite'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.store),
+              title: const Text('LFC Store'),
+              onTap: () {
+                Navigator.pop(context);
+                _launchStore();
+              },
+            ),
+          ],
+        ),
       ),
       body: FutureBuilder(
         future: future,
@@ -83,9 +157,8 @@ class _NewsPageState extends State<NewsPage> {
                         children: [
                           Container(
                             height: 220,
-
                             width: double.infinity,
-                            color: Colors.blue,
+
                             child: Image.network(image ?? "no content"),
                           ),
                           Text(
@@ -105,33 +178,6 @@ class _NewsPageState extends State<NewsPage> {
             );
           }
         },
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.red,
-        currentIndex: currentIndex,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.white70,
-        type: BottomNavigationBarType.fixed,
-        onTap: (index) {
-          if (index == 0) {
-            Get.toNamed("/");
-          } else if (index == 1) {
-            Get.toNamed("/news");
-          } else if (index == 2) {
-            Get.toNamed("/player");
-          } else if (index == 3) {
-            Get.toNamed("/fixture");
-          } else if (index == 4) {
-            Get.toNamed("/profile");
-          }
-        },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-          BottomNavigationBarItem(icon: Icon(Icons.newspaper), label: "News"),
-          BottomNavigationBarItem(icon: Icon(Icons.people), label: "Players"),
-          BottomNavigationBarItem(icon: Icon(Icons.event), label: "Fixture"),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
-        ],
       ),
     );
   }

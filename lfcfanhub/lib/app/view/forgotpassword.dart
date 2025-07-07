@@ -30,9 +30,10 @@ class _ForGotpasswordState extends State<ForGotpassword> {
     // await FirebaseAuth.instance.sendPasswordResetEmail(email: inputEmail);
     Get.defaultDialog(
       title: 'Resent Email complete',
-      titleStyle: TextStyle(color: Colors.white),
-      middleText: "plese check your Email",
-      backgroundColor: Colors.red,
+      titleStyle: TextStyle(color: Colors.red),
+      middleText: "Plese check your Email",
+      middleTextStyle: TextStyle(color: Colors.red),
+      backgroundColor: Colors.white,
       textConfirm: "OKAY",
 
       onConfirm: () {

@@ -8,6 +8,7 @@ import 'package:lfcfanhub/app/controller/upload_image.dart';
 import 'package:lfcfanhub/app/view/home.dart';
 import 'package:lfcfanhub/app/view/login.dart';
 import 'package:lfcfanhub/service/storage.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -72,6 +73,17 @@ class _ProfileState extends State<Profile> {
     }
   }
 
+  void _launchStore() async {
+    final url = Uri.parse(
+      'https://play.google.com/store/apps/developer?id=Liverpool+Football+Club',
+    );
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -80,6 +92,68 @@ class _ProfileState extends State<Profile> {
         backgroundColor: Colors.red,
         iconTheme: const IconThemeData(color: Colors.white),
         centerTitle: true,
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(color: Colors.red),
+              child: Column(
+                children: [
+                  CircleAvatar(
+                    radius: 30,
+                    backgroundImage: AssetImage('assets/images/logoapp.png'),
+                    backgroundColor: Colors.white,
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    'Liverpool FC',
+                    style: TextStyle(color: Colors.white, fontSize: 20),
+                  ),
+                ],
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.home),
+              title: const Text('Home'),
+              onTap: () => Get.toNamed('/'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.newspaper),
+              title: const Text('News'),
+              onTap: () => Get.toNamed('/news'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.people),
+              title: const Text('Players'),
+              onTap: () => Get.toNamed('/player'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.event),
+              title: const Text('Fixtures'),
+              onTap: () => Get.toNamed('/fixture'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.person),
+              title: const Text('Profile'),
+              onTap: () => Get.toNamed('/profile'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.star),
+              title: const Text('Favorite'),
+              onTap: () => Get.toNamed('/favorite'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.store),
+              title: const Text('LFC Store'),
+              onTap: () {
+                Navigator.pop(context);
+                _launchStore();
+              },
+            ),
+          ],
+        ),
       ),
       body: Center(
         child: Column(
@@ -146,20 +220,21 @@ class _ProfileState extends State<Profile> {
                   )
                 : Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: ElevatedButton(
+                    child: ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
                         foregroundColor: Colors.white,
                       ),
                       onPressed: () => setState(() => _isEdit = true),
-                      child: const Text(
+                      icon: const Icon(Icons.edit),
+                      label: const Text(
                         "Edit Profile",
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
                   ),
 
-            ElevatedButton(
+            ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
                 foregroundColor: Colors.white,
@@ -167,42 +242,32 @@ class _ProfileState extends State<Profile> {
               onPressed: () {
                 Get.toNamed('/favorite');
               },
-              child: const Text(
+              icon: const Icon(Icons.star),
+              label: const Text(
                 "Favorite Match",
                 style: TextStyle(color: Colors.white),
               ),
             ),
+
+            const Spacer(),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                ),
+                onPressed: () async {
+                  await FirebaseAuth.instance.signOut();
+                  UserStorage().logout();
+                  Get.offAllNamed('/login');
+                },
+                icon: const Icon(Icons.logout),
+                label: const Text("Logout"),
+              ),
+            ),
           ],
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.red,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.white70,
-        currentIndex: 1,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle),
-            label: "Profile",
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.logout), label: "Log out"),
-        ],
-        onTap: (index) async {
-          if (index == 0) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const Home()),
-            );
-          } else if (index == 2) {
-            await FirebaseAuth.instance.signOut();
-            UserStorage().logout();
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const Login()),
-            );
-          }
-        },
       ),
     );
   }

@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:lfcfanhub/app/model/fixtureModel.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:permission_handler/permission_handler.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class FavoritePage extends StatefulWidget {
   const FavoritePage({super.key});
@@ -200,7 +202,15 @@ class _FavoritePageState extends State<FavoritePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Favorite Matches")),
+      appBar: AppBar(
+        title: const Text(
+          "Favorite Matches",
+          style: TextStyle(color: Colors.white),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.red,
+        iconTheme: IconThemeData(color: Colors.white),
+      ),
       body: FutureBuilder<List<FixtureModel>>(
         future: fetchFavoritesFromFirebase(),
         builder: (context, snapshot) {
@@ -303,6 +313,13 @@ class _FavoritePageState extends State<FavoritePage> {
                             ),
                             onPressed: () async {
                               final id = fixture.id.toString();
+                              setState(() {
+                                if (isStarred) {
+                                  favoriteIds.remove(id);
+                                } else {
+                                  favoriteIds.add(id);
+                                }
+                              });
                               if (isStarred) {
                                 await removeFavorite(id);
                               } else {
@@ -310,24 +327,6 @@ class _FavoritePageState extends State<FavoritePage> {
                               }
                             },
                           ),
-                          // IconButton(
-                          //   icon: const Icon(
-                          //     Icons.notifications_active,
-                          //     color: Colors.blueAccent,
-                          //   ),
-                          //   onPressed: () async {
-                          //     await scheduleNotification(fixture);
-                          //     if (mounted) {
-                          //       ScaffoldMessenger.of(context).showSnackBar(
-                          //         const SnackBar(
-                          //           content: Text(
-                          //             'ตั้งการแจ้งเตือนแมตช์เรียบร้อยแล้ว',
-                          //           ),
-                          //         ),
-                          //       );
-                          //     }
-                          //   },
-                          // ),
                         ],
                       ),
                     ],

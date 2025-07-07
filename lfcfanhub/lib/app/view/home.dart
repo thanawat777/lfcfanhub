@@ -5,6 +5,8 @@ import 'package:intl/intl.dart';
 import 'package:lfcfanhub/app/model/fixtureModel.dart';
 import 'package:lfcfanhub/app/model/newsmodel.dart';
 import 'package:lfcfanhub/app/model/playerteam.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:lfcfanhub/app/controller/webview.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -25,6 +27,16 @@ class _HomeState extends State<Home> {
   Future<List<NewsModel>>? futureNews;
   Future<List<FixtureModel>>? futureFixtures;
   Future<List<PlayerModel>>? futurePlayer;
+  void _launchStore() async {
+    final url = Uri.parse(
+      'https://play.google.com/store/apps/developer?id=Liverpool+Football+Club',
+    );
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
 
   @override
   void initState() {
@@ -145,6 +157,14 @@ class _HomeState extends State<Home> {
               leading: const Icon(Icons.star),
               title: const Text('Favorite'),
               onTap: () => Get.toNamed('/favorite'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.store),
+              title: const Text('LFC Store'),
+              onTap: () {
+                Navigator.pop(context);
+                _launchStore();
+              },
             ),
           ],
         ),
@@ -360,40 +380,6 @@ class _HomeState extends State<Home> {
               },
             ),
           ),
-        ],
-      ),
-
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.red,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.white70,
-        currentIndex: 0,
-        type: BottomNavigationBarType.fixed,
-        onTap: (index) {
-          switch (index) {
-            case 0:
-              Get.toNamed("/");
-              break;
-            case 1:
-              Get.toNamed("/news");
-              break;
-            case 2:
-              Get.toNamed("/player");
-              break;
-            case 3:
-              Get.toNamed("/fixture");
-              break;
-            case 4:
-              Get.toNamed("/profile");
-              break;
-          }
-        },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-          BottomNavigationBarItem(icon: Icon(Icons.newspaper), label: "News"),
-          BottomNavigationBarItem(icon: Icon(Icons.people), label: "Players"),
-          BottomNavigationBarItem(icon: Icon(Icons.event), label: "Fixture"),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
         ],
       ),
     );

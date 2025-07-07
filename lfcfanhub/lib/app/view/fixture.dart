@@ -2,10 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:dio/dio.dart';
 import 'package:lfcfanhub/app/view/favorite.dart';
 import 'package:lfcfanhub/app/model/fixtureModel.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class FixturePage extends StatefulWidget {
   const FixturePage({super.key});
@@ -153,6 +155,17 @@ class _FixturePageState extends State<FixturePage> {
     }
   }
 
+  void _launchStore() async {
+    final url = Uri.parse(
+      'https://play.google.com/store/apps/developer?id=Liverpool+Football+Club',
+    );
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -165,13 +178,78 @@ class _FixturePageState extends State<FixturePage> {
           IconButton(
             icon: const Icon(Icons.star),
             onPressed: () async {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const FavoritePage()),
-              );
+              await Get.to(() => const FavoritePage());
+
+              // โหลด favoriteId ใหม่ แล้วอัปเดต futureFixtures
+              await fetchFavoriteIds();
+              setState(() {
+                futureFixtures = fetchLfcFixture();
+              });
             },
           ),
         ],
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(color: Colors.red),
+              child: Column(
+                children: [
+                  CircleAvatar(
+                    radius: 30,
+                    backgroundImage: AssetImage('assets/images/logoapp.png'),
+                    backgroundColor: Colors.white,
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    'Liverpool FC',
+                    style: TextStyle(color: Colors.white, fontSize: 20),
+                  ),
+                ],
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.home),
+              title: const Text('Home'),
+              onTap: () => Get.toNamed('/'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.newspaper),
+              title: const Text('News'),
+              onTap: () => Get.toNamed('/news'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.people),
+              title: const Text('Players'),
+              onTap: () => Get.toNamed('/player'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.event),
+              title: const Text('Fixtures'),
+              onTap: () => Get.toNamed('/fixture'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.person),
+              title: const Text('Profile'),
+              onTap: () => Get.toNamed('/profile'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.star),
+              title: const Text('Favorite'),
+              onTap: () => Get.toNamed('/favorite'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.store),
+              title: const Text('LFC Store'),
+              onTap: () {
+                Navigator.pop(context);
+                _launchStore();
+              },
+            ),
+          ],
+        ),
       ),
       body: FutureBuilder<List<FixtureModel>>(
         future: futureFixtures,

@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:lfcfanhub/app/controller/bottoncontrol.dart';
 import 'package:lfcfanhub/app/view/favorite.dart';
 import 'package:lfcfanhub/app/view/fixture.dart';
 import 'package:lfcfanhub/app/view/home.dart';
@@ -75,6 +76,7 @@ class MyApp extends StatelessWidget {
         GetPage(name: '/profile', page: () => Profile()),
         GetPage(name: '/fixture', page: () => FixturePage()),
         GetPage(name: '/favorite', page: () => FavoritePage()),
+        GetPage(name: '/main', page: () => MainPage()),
       ],
     );
   }
@@ -86,7 +88,7 @@ class Autwrap extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (UserStorage().isLogin()) {
-      return Home();
+      return MainPage();
     } else {
       return Login();
     }

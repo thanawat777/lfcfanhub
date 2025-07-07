@@ -57,7 +57,7 @@ class _LoginState extends State<Login> {
 
       UserStorage().collectUserdata(userdata.data());
       Get.snackbar("Success", "Login complete");
-      Get.offAll(() => Home());
+      Get.offAllNamed('/main');
     } on FirebaseAuthException catch (e) {
       String message = "Login failed";
       if (e.code == 'user-not-found') {
