@@ -6,7 +6,7 @@ import 'package:lfcfanhub/app/model/fixtureModel.dart';
 import 'package:lfcfanhub/app/model/newsmodel.dart';
 import 'package:lfcfanhub/app/model/playerteam.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:lfcfanhub/app/controller/webview.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -17,6 +17,8 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final Dio dio = Dio();
+  final AudioPlayer _player = AudioPlayer();
+  bool isPlaying = true;
 
   final List<String> imageUrl = [
     'https://www.sosyallig.com/public/uploads/haberler/269f4c2c703c0c733c69f4ae7171869b.jpg',
@@ -38,12 +40,23 @@ class _HomeState extends State<Home> {
     }
   }
 
+  Future<void> _playWelcomeSound() async {
+    await _player.play(AssetSource('sound/lfc_fans.mp3'));
+  }
+
   @override
   void initState() {
     super.initState();
     futureNews = fetchLfcNews();
     futureFixtures = fetchLfcFixture();
     futurePlayer = fetchLfcPlayer();
+    _playWelcomeSound();
+  }
+
+  @override
+  void dispose() {
+    _player.dispose();
+    super.dispose();
   }
 
   Future<List<NewsModel>> fetchLfcNews() async {
@@ -105,8 +118,25 @@ class _HomeState extends State<Home> {
         title: const Text("LFC", style: TextStyle(color: Colors.white)),
         centerTitle: true,
         backgroundColor: Colors.red,
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.white),
+        actions: [
+          IconButton(
+            icon: Icon(isPlaying ? Icons.stop : Icons.play_arrow),
+            onPressed: () async {
+              if (isPlaying) {
+                await _player.stop();
+              } else {
+                await _player.play(AssetSource('sound/lfc_fans.mp3'));
+              }
+              setState(() {
+                isPlaying = !isPlaying;
+              });
+            },
+            tooltip: isPlaying ? "หยุดเพลง" : "เล่นเพลง",
+          ),
+        ],
       ),
+
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,

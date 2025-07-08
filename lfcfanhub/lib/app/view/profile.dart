@@ -5,8 +5,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lfcfanhub/app/controller/upload_image.dart';
-import 'package:lfcfanhub/app/view/home.dart';
-import 'package:lfcfanhub/app/view/login.dart';
 import 'package:lfcfanhub/service/storage.dart';
 import 'package:url_launcher/url_launcher.dart';
 

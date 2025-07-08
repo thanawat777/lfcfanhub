@@ -54,6 +54,7 @@ dependencies:
   flutter_timezone: ^4.1.1
   timezone: ^0.10.1
   permission_handler: ^12.0.1
+  audioplayers: ^6.5.0
   
 
 flutter_launcher_icons:
@@ -97,6 +98,7 @@ flutter:
   assets:
     - assets/images/Liverpool.png
     - assets/images/logoapp.png
+    - assets/sound/lfc_fans.mp3
 
   # To add assets to your application, add an assets section, like this:
   # assets:

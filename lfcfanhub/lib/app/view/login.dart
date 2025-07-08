@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lfcfanhub/app/view/forgotpassword.dart';
-import 'package:lfcfanhub/app/view/home.dart';
+
 import 'package:lfcfanhub/app/view/register.dart';
 import 'package:lfcfanhub/service/storage.dart';
 

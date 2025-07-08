@@ -2,13 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:get/get.dart';
+
 import 'package:intl/intl.dart';
 import 'package:lfcfanhub/app/model/fixtureModel.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:permission_handler/permission_handler.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class FavoritePage extends StatefulWidget {
   const FavoritePage({super.key});
@@ -185,6 +184,7 @@ class _FavoritePageState extends State<FavoritePage> {
       channelDescription: 'สำหรับทดสอบการแจ้งเตือน',
       importance: Importance.max,
       priority: Priority.high,
+      sound: RawResourceAndroidNotificationSound('alert1'),
     );
 
     const notificationDetails = NotificationDetails(android: androidDetails);

@@ -110,7 +110,7 @@ class _RegisterState extends State<Register> {
                   style: TextStyle(fontSize: 14),
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    hintText: "name",
+                    hintText: "Name",
                   ),
                 ),
               ),

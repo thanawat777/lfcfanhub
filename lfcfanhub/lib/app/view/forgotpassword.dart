@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -26,8 +27,8 @@ class _ForGotpasswordState extends State<ForGotpassword> {
   }
 
   Future<void> regsetPassword() async {
-    // final inputEmail = emailController.text.trim();
-    // await FirebaseAuth.instance.sendPasswordResetEmail(email: inputEmail);
+    final inputEmail = emailController.text.trim();
+    await FirebaseAuth.instance.sendPasswordResetEmail(email: inputEmail);
     Get.defaultDialog(
       title: 'Resent Email complete',
       titleStyle: TextStyle(color: Colors.red),
