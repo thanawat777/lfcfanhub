@@ -50,10 +50,8 @@ class _MyWebViewPageState extends State<MyWebViewPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "Liverpool News",
-          style: TextStyle(color: Colors.white),
-        ),
+        title: const Text("", style: TextStyle(color: Colors.white)),
+        iconTheme: IconThemeData(color: Colors.white),
 
         backgroundColor: Colors.red,
       ),

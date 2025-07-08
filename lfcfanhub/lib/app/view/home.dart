@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:lfcfanhub/app/controller/webview.dart';
 import 'package:lfcfanhub/app/model/fixtureModel.dart';
 import 'package:lfcfanhub/app/model/newsmodel.dart';
 import 'package:lfcfanhub/app/model/playerteam.dart';
@@ -396,14 +397,27 @@ class _HomeState extends State<Home> {
               itemCount: imageUrl.length,
               controller: PageController(viewportFraction: 1),
               itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 3),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: Image.network(
-                      imageUrl[index],
-                      fit: BoxFit.cover,
-                      width: double.infinity,
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => MyWebViewPage(
+                          url:
+                              'https://www.thisisanfield.com/clubinfo/anfield/stands/', // ตัวอย่างลิงก์
+                        ),
+                      ),
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 3),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.network(
+                        imageUrl[index],
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                      ),
                     ),
                   ),
                 );
