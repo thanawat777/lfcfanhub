@@ -15,7 +15,8 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  int currentIndex = 0;
+  String page = Get.parameters["page"] ?? "0";
+  late int currentIndex;
 
   final List<Widget> pages = [
     Home(),
@@ -33,6 +34,13 @@ class _MainPageState extends State<MainPage> {
     } else {
       throw 'Could not launch $url';
     }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    currentIndex = int.parse(page);
   }
 
   @override

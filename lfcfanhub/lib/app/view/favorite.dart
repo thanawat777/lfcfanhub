@@ -163,6 +163,7 @@ class _FavoritePageState extends State<FavoritePage> {
       channelDescription: 'แจ้งเตือนก่อนการแข่งขัน',
       importance: Importance.max,
       priority: Priority.high,
+      sound: RawResourceAndroidNotificationSound('alert1'),
     );
 
     const platformDetails = NotificationDetails(android: androidDetails);
@@ -177,27 +178,27 @@ class _FavoritePageState extends State<FavoritePage> {
     );
   }
 
-  Future<void> testNotification() async {
-    const androidDetails = AndroidNotificationDetails(
-      'test_channel_id',
-      'Test Channel',
-      channelDescription: 'สำหรับทดสอบการแจ้งเตือน',
-      importance: Importance.max,
-      priority: Priority.high,
-      sound: RawResourceAndroidNotificationSound('alert1'),
-    );
+  // Future<void> testNotification() async {
+  //   const androidDetails = AndroidNotificationDetails(
+  //     'test_channel_id',
+  //     'Test Channel',
+  //     channelDescription: 'สำหรับทดสอบการแจ้งเตือน',
+  //     importance: Importance.max,
+  //     priority: Priority.high,
+  //     sound: RawResourceAndroidNotificationSound('alert1'),
+  //   );
 
-    const notificationDetails = NotificationDetails(android: androidDetails);
+  //   const notificationDetails = NotificationDetails(android: androidDetails);
 
-    await flutterLocalNotificationsPlugin.zonedSchedule(
-      999,
-      '🔔 ทดสอบแจ้งเตือน',
-      'นี่คือข้อความแจ้งเตือนที่ทดสอบ',
-      tz.TZDateTime.now(tz.local).add(const Duration(seconds: 10)),
-      notificationDetails,
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-    );
-  }
+  //   await flutterLocalNotificationsPlugin.zonedSchedule(
+  //     999,
+  //     'แมตซ์จะเริ่มในอีก 10 นาที',
+  //     'ลิเวอร์พูล vs แมนเชสเตอร์ ยูไนเต็ด',
+  //     tz.TZDateTime.now(tz.local).add(const Duration(seconds: 10)),
+  //     notificationDetails,
+  //     androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -337,13 +338,13 @@ class _FavoritePageState extends State<FavoritePage> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        icon: const Icon(Icons.notifications),
-        label: const Text('ทดสอบแจ้งเตือน'),
-        onPressed: () async {
-          await testNotification();
-        },
-      ),
+      // floatingActionButton: FloatingActionButton.extended(
+      //   icon: const Icon(Icons.notifications),
+      //   label: const Text('ทดสอบแจ้งเตือน'),
+      //   onPressed: () async {
+      //     await testNotification();
+      //   },
+      // ),
     );
   }
 }

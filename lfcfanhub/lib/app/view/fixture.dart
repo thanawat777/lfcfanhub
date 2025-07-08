@@ -213,27 +213,27 @@ class _FixturePageState extends State<FixturePage> {
             ListTile(
               leading: const Icon(Icons.home),
               title: const Text('Home'),
-              onTap: () => Get.toNamed('/'),
+              onTap: () => Get.toNamed('/main', parameters: {"page": "0"}),
             ),
             ListTile(
               leading: const Icon(Icons.newspaper),
               title: const Text('News'),
-              onTap: () => Get.toNamed('/news'),
+              onTap: () => Get.toNamed('/main', parameters: {"page": "1"}),
             ),
             ListTile(
               leading: const Icon(Icons.people),
               title: const Text('Players'),
-              onTap: () => Get.toNamed('/player'),
+              onTap: () => Get.toNamed('/main', parameters: {"page": "2"}),
             ),
             ListTile(
               leading: const Icon(Icons.event),
               title: const Text('Fixtures'),
-              onTap: () => Get.toNamed('/fixture'),
+              onTap: () => Get.toNamed('/main', parameters: {"page": "3"}),
             ),
             ListTile(
               leading: const Icon(Icons.person),
               title: const Text('Profile'),
-              onTap: () => Get.toNamed('/profile'),
+              onTap: () => Get.toNamed('/main', parameters: {"page": "4"}),
             ),
             ListTile(
               leading: const Icon(Icons.star),

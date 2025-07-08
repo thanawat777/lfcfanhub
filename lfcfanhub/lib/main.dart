@@ -67,7 +67,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: Autwrap(),
+      home: MainPage(),
       getPages: [
         GetPage(name: "/", page: () => Home()),
         GetPage(name: "/login", page: () => Login()),
