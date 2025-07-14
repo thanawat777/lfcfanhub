@@ -122,7 +122,7 @@ class _HomeState extends State<Home> {
         iconTheme: const IconThemeData(color: Colors.white),
         actions: [
           IconButton(
-            icon: Icon(isPlaying ? Icons.stop : Icons.play_arrow),
+            icon: Icon(isPlaying ? Icons.volume_up : Icons.volume_off),
             onPressed: () async {
               if (isPlaying) {
                 await _player.stop();
@@ -404,7 +404,7 @@ class _HomeState extends State<Home> {
                       MaterialPageRoute(
                         builder: (_) => MyWebViewPage(
                           url:
-                              'https://www.thisisanfield.com/clubinfo/anfield/stands/', // ตัวอย่างลิงก์
+                              'https://www.thisisanfield.com/clubinfo/anfield/stands/',
                         ),
                       ),
                     );
