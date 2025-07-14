@@ -25,7 +25,16 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 Future<void> requestNotificationPermission() async {
   final status = await Permission.notification.status;
-  if (!status.isGranted) {
+
+  final bool granted =
+      await flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >()
+          ?.areNotificationsEnabled() ??
+      false;
+
+  if (!status.isGranted || !granted) {
     await Permission.notification.request();
   }
 }
@@ -45,13 +54,34 @@ void main() async {
 
   // ตั้งค่าเริ่มต้นสำหรับ Android เท่านั้น
   const AndroidInitializationSettings initializationSettingsAndroid =
-      AndroidInitializationSettings('@mipmap/ic_launcher');
+      AndroidInitializationSettings('@mipmap/launcher_icon');
 
   const InitializationSettings initializationSettings = InitializationSettings(
     android: initializationSettingsAndroid,
   );
 
-  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  // await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
+  try {
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  } catch (e) {
+    print('❌ Notification init error: $e');
+  }
+  // ✅ สร้างช่องสำหรับ test_channel_id ล่วงหน้า
+  const AndroidNotificationChannel testChannel = AndroidNotificationChannel(
+    'test_channel_id', // ต้องตรงกับที่ใช้ใน zonedSchedule
+    'Test Channel',
+    description: 'สำหรับทดสอบการแจ้งเตือน',
+    importance: Importance.high,
+  );
+
+  await flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin
+      >()
+      ?.createNotificationChannel(testChannel);
+
+  // ✅ เช่นเดียวกัน หากคุณใช้ match_channel_id ต้องประกาศมันด้วยเช่นกัน
 
   runApp(const MyApp());
 }

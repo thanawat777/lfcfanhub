@@ -39,7 +39,7 @@ class _FavoritePageState extends State<FavoritePage> {
 
   Future<void> _initNotification() async {
     const AndroidInitializationSettings androidSettings =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+        AndroidInitializationSettings('@mipmap/launcher_icon');
 
     const InitializationSettings initSettings = InitializationSettings(
       android: androidSettings,
