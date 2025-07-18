@@ -67,21 +67,21 @@ void main() async {
   } catch (e) {
     print('❌ Notification init error: $e');
   }
-  // ✅ สร้างช่องสำหรับ test_channel_id ล่วงหน้า
-  const AndroidNotificationChannel testChannel = AndroidNotificationChannel(
-    'test_channel_id', // ต้องตรงกับที่ใช้ใน zonedSchedule
-    'Test Channel',
-    description: 'สำหรับทดสอบการแจ้งเตือน',
-    importance: Importance.high,
-  );
+  // // ✅ สร้างช่องสำหรับ test_channel_id ล่วงหน้า
+  // const AndroidNotificationChannel testChannel = AndroidNotificationChannel(
+  //   'test_channel_id', // ต้องตรงกับที่ใช้ใน zonedSchedule
+  //   'Test Channel',
+  //   description: 'สำหรับทดสอบการแจ้งเตือน',
+  //   importance: Importance.high,
+  // );
 
-  await flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin
-      >()
-      ?.createNotificationChannel(testChannel);
+  // await flutterLocalNotificationsPlugin
+  //     .resolvePlatformSpecificImplementation<
+  //       AndroidFlutterLocalNotificationsPlugin
+  //     >()
+  //     ?.createNotificationChannel(testChannel);
 
-  // ✅ เช่นเดียวกัน หากคุณใช้ match_channel_id ต้องประกาศมันด้วยเช่นกัน
+  // // ✅ เช่นเดียวกัน หากคุณใช้ match_channel_id ต้องประกาศมันด้วยเช่นกัน
 
   runApp(const MyApp());
 }
